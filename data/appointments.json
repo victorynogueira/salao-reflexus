@@ -1,0 +1,106 @@
+[
+  {
+    "clientId": "mqgpi1ypuhlmwgpr9le",
+    "client": {
+      "name": "Marcia",
+      "phone": "31986440219",
+      "id": "mqgpi1ypuhlmwgpr9le",
+      "active": true,
+      "createdAt": "2026-06-16T13:57:22.417Z",
+      "updatedAt": "2026-06-16T13:57:22.417Z"
+    },
+    "professionalId": "mqgoamtcrd921bmu0ag",
+    "professional": {
+      "name": "Ana Silva",
+      "specialty": "Cabelereira",
+      "commission": 30,
+      "id": "mqgoamtcrd921bmu0ag",
+      "active": true,
+      "createdAt": "2026-06-16T13:23:36.576Z",
+      "updatedAt": "2026-06-16T13:23:36.576Z"
+    },
+    "date": "2026-06-16",
+    "startTime": "08:15",
+    "endTime": "09:45",
+    "notes": "",
+    "totalPrice": 120,
+    "totalDuration": 90,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqgoaq4rfne5mo0fi55",
+        "service": {
+          "name": "Coloração",
+          "description": "Coloração completa",
+          "duration": 90,
+          "price": 120,
+          "commission": 40,
+          "category": "Coloração",
+          "id": "mqgoaq4rfne5mo0fi55",
+          "active": true,
+          "createdAt": "2026-06-16T13:23:40.875Z",
+          "updatedAt": "2026-06-16T13:23:40.875Z"
+        },
+        "price": 120,
+        "commission": 40,
+        "duration": 90
+      }
+    ],
+    "id": "mqgpigcs1pkhlhivxo8",
+    "createdAt": "2026-06-16T13:57:41.068Z",
+    "updatedAt": "2026-06-16T13:57:41.068Z"
+  },
+  {
+    "clientId": "mqgoaq4bnl00licy87i",
+    "client": {
+      "name": "Pedro Santos",
+      "phone": "11966666666",
+      "id": "mqgoaq4bnl00licy87i",
+      "active": true,
+      "createdAt": "2026-06-16T13:23:40.859Z",
+      "updatedAt": "2026-06-16T13:23:40.859Z"
+    },
+    "professionalId": "mqgoamm6zjhyp8kuvfs",
+    "professional": {
+      "name": "Maria Oliveira",
+      "specialty": "Manicure/Pedicure",
+      "commission": 35,
+      "id": "mqgoamm6zjhyp8kuvfs",
+      "active": true,
+      "createdAt": "2026-06-16T13:23:36.318Z",
+      "updatedAt": "2026-06-16T13:23:36.318Z"
+    },
+    "date": "2026-06-17",
+    "startTime": "08:15",
+    "endTime": "08:35",
+    "notes": "",
+    "totalPrice": 25,
+    "totalDuration": 20,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqgoaq5qr7fy3p2yt6s",
+        "service": {
+          "name": "Barba",
+          "description": "Barba completa com navalha",
+          "duration": 20,
+          "price": 25,
+          "commission": 8,
+          "category": "Barba",
+          "id": "mqgoaq5qr7fy3p2yt6s",
+          "active": true,
+          "createdAt": "2026-06-16T13:23:40.910Z",
+          "updatedAt": "2026-06-16T13:23:40.910Z"
+        },
+        "price": 25,
+        "commission": 8,
+        "duration": 20
+      }
+    ],
+    "id": "mqgpjw7iw60qxbqswz",
+    "createdAt": "2026-06-16T13:58:48.270Z",
+    "updatedAt": "2026-06-16T13:58:48.270Z"
+  }
+]

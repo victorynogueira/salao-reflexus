@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Recepção",
+    "email": "recepcao@reflexus.com",
+    "password": "$2a$12$gRuJeXHxBh.7GCUJY6Sz4OhGH.IeBEUvoUExjcu7wVFbLljyWwASS",
+    "role": "RECEPTIONIST",
+    "active": true,
+    "id": "mqgoamdzaomcqduorh5",
+    "createdAt": "2026-06-16T13:23:36.023Z",
+    "updatedAt": "2026-06-16T13:23:36.023Z"
+  },
+  {
+    "name": "Recepção",
+    "email": "recepcao@reflexus.com",
+    "password": "$2a$12$IPP0Fupynu3xuttwVSHtqOUU4//vjVipTjWerxALBqO8CU3RNQTTu",
+    "role": "RECEPTIONIST",
+    "active": true,
+    "id": "mqgoamffknqt7j39boc",
+    "createdAt": "2026-06-16T13:23:36.075Z",
+    "updatedAt": "2026-06-16T13:23:36.075Z"
+  },
+  {
+    "name": "Administrador",
+    "email": "admin@reflexus.com",
+    "password": "$2a$12$hiilSfMVA9De3NdNWESUWumxWbyFA5haDDRsyPKRoorLm4AcbMGE6",
+    "role": "ADMIN",
+    "active": true,
+    "id": "mqgoammjsumxg830aos",
+    "createdAt": "2026-06-16T13:23:36.331Z",
+    "updatedAt": "2026-06-16T13:23:36.373Z"
+  },
+  {
+    "name": "Recepção",
+    "email": "recepcao@reflexus.com",
+    "password": "$2a$12$hiilSfMVA9De3NdNWESUWumxWbyFA5haDDRsyPKRoorLm4AcbMGE6",
+    "role": "RECEPTIONIST",
+    "active": true,
+    "id": "mqgoamqgcqahhcmu8jc",
+    "createdAt": "2026-06-16T13:23:36.472Z",
+    "updatedAt": "2026-06-16T13:23:36.472Z"
+  },
+  {
+    "name": "Administrador",
+    "email": "admin@reflexus.com",
+    "password": "$2a$12$vTYBRE6LVTTcVeN6dDtpPuZoYFYtaAQGW0t5UVBupE2xFTeLrloNa",
+    "role": "ADMIN",
+    "active": true,
+    "id": "mqgoanggo47yvu8gav",
+    "createdAt": "2026-06-16T13:23:37.408Z",
+    "updatedAt": "2026-06-16T13:23:37.465Z"
+  },
+  {
+    "name": "Recepção",
+    "email": "recepcao@reflexus.com",
+    "password": "$2a$12$vTYBRE6LVTTcVeN6dDtpPuZoYFYtaAQGW0t5UVBupE2xFTeLrloNa",
+    "role": "RECEPTIONIST",
+    "active": true,
+    "id": "mqgoannb7m2b75ofq2c",
+    "createdAt": "2026-06-16T13:23:37.655Z",
+    "updatedAt": "2026-06-16T13:23:37.655Z"
+  }
+]

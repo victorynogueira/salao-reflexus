@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gerar Ícones PWA</title>
+</head>
+<body style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;">
+  <h1>Gerando ícones...</h1>
+  <p>Os ícones serão baixados automaticamente.</p>
+  <script>
+    function generateIcon(size, maskable, filename) {
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')
+
+      // Background
+      const gradient = ctx.createLinearGradient(0, 0, size, size)
+      gradient.addColorStop(0, '#c026d3')
+      gradient.addColorStop(1, '#a21caf')
+      ctx.fillStyle = gradient
+
+      if (maskable && size === 192) {
+        // Full background for maskable
+        ctx.beginPath()
+        ctx.roundRect(0, 0, size, size, size * 0.2)
+        ctx.fill()
+      } else if (maskable && size === 512) {
+        ctx.beginPath()
+        ctx.roundRect(0, 0, size, size, size * 0.2)
+        ctx.fill()
+      } else {
+        // Circle for regular icons
+        ctx.beginPath()
+        ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2)
+        ctx.fill()
+      }
+
+      // Scissors icon
+      ctx.fillStyle = '#ffffff'
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = size * 0.03
+
+      const s = size * 0.01
+      ctx.save()
+      ctx.translate(size/2, size/2)
+      ctx.scale(s, s)
+
+      // Blade 1
+      ctx.beginPath()
+      ctx.moveTo(-15, -30)
+      ctx.lineTo(-5, -5)
+      ctx.lineTo(15, -20)
+      ctx.strokeStyle = '#fff'
+      ctx.lineWidth = 3
+      ctx.stroke()
+
+      // Blade 2
+      ctx.beginPath()
+      ctx.moveTo(15, -30)
+      ctx.lineTo(5, -5)
+      ctx.lineTo(-15, -20)
+      ctx.stroke()
+
+      // Handles
+      ctx.beginPath()
+      ctx.arc(-12, 8, 10, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.arc(12, 8, 10, 0, Math.PI * 2)
+      ctx.stroke()
+
+      // Pivot
+      ctx.beginPath()
+      ctx.arc(0, -5, 4, 0, Math.PI * 2)
+      ctx.fillStyle = '#fff'
+      ctx.fill()
+
+      ctx.restore()
+
+      // Download
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        a.click()
+        URL.revokeObjectURL(url)
+      })
+    }
+
+    // Generate all 4 icons
+    setTimeout(() => {
+      generateIcon(192, false, 'icon-192.png')
+      setTimeout(() => generateIcon(512, false, 'icon-512.png'), 500)
+      setTimeout(() => generateIcon(192, true, 'icon-maskable-192.png'), 1000)
+      setTimeout(() => generateIcon(512, true, 'icon-maskable-512.png'), 1500)
+    }, 1000)
+
+    // Also save to localStorage for the app
+    function saveIconToStorage(size, maskable) {
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')
+
+      const gradient = ctx.createLinearGradient(0, 0, size, size)
+      gradient.addColorStop(0, '#c026d3')
+      gradient.addColorStop(1, '#a21caf')
+      ctx.fillStyle = gradient
+      ctx.beginPath()
+      ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.fillStyle = '#ffffff'
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = size * 0.03
+
+      const sc = size * 0.01
+      ctx.save()
+      ctx.translate(size/2, size/2)
+      ctx.scale(sc, sc)
+
+      ctx.beginPath()
+      ctx.moveTo(-15, -30)
+      ctx.lineTo(-5, -5)
+      ctx.lineTo(15, -20)
+      ctx.strokeStyle = '#fff'
+      ctx.lineWidth = 3
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.moveTo(15, -30)
+      ctx.lineTo(5, -5)
+      ctx.lineTo(-15, -20)
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.arc(-12, 8, 10, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.arc(12, 8, 10, 0, Math.PI * 2)
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.arc(0, -5, 4, 0, Math.PI * 2)
+      ctx.fillStyle = '#fff'
+      ctx.fill()
+
+      ctx.restore()
+
+      return canvas.toDataURL('image/png')
+    }
+
+    setTimeout(() => {
+      try {
+        localStorage.setItem('icon-192', saveIconToStorage(192, false))
+        localStorage.setItem('icon-512', saveIconToStorage(512, false))
+      } catch(e) {}
+    }, 3000)
+  </script>
+</body>
+</html>

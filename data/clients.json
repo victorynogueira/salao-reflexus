@@ -1,0 +1,96 @@
+[
+  {
+    "name": "Maria Souza",
+    "phone": "11999999999",
+    "email": "maria@email.com",
+    "id": "mqgoaq2tbz441b2v407",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.805Z",
+    "updatedAt": "2026-06-16T13:23:40.805Z"
+  },
+  {
+    "name": "João Silva",
+    "phone": "11988888888",
+    "id": "mqgoaq3q8fpx48a4ebq",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.838Z",
+    "updatedAt": "2026-06-16T13:23:40.839Z"
+  },
+  {
+    "name": "Ana Costa",
+    "phone": "11977777777",
+    "email": "ana@email.com",
+    "id": "mqgoaq46fi490mzkwtp",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.854Z",
+    "updatedAt": "2026-06-16T13:23:40.854Z"
+  },
+  {
+    "name": "Pedro Santos",
+    "phone": "11966666666",
+    "id": "mqgoaq4bnl00licy87i",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.859Z",
+    "updatedAt": "2026-06-16T13:23:40.859Z"
+  },
+  {
+    "name": "Lucia Ferreira",
+    "phone": "11955555555",
+    "email": "lucia@email.com",
+    "id": "mqgoaq4oop3lavkboi",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.872Z",
+    "updatedAt": "2026-06-16T13:23:40.872Z"
+  },
+  {
+    "name": "Maria Souza",
+    "phone": "11999999999",
+    "email": "maria@email.com",
+    "id": "mqgoaq60td51dm2oxr",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.920Z",
+    "updatedAt": "2026-06-16T13:23:40.920Z"
+  },
+  {
+    "name": "João Silva",
+    "phone": "11988888888",
+    "id": "mqgoaq663v92k180gga",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.926Z",
+    "updatedAt": "2026-06-16T13:23:40.926Z"
+  },
+  {
+    "name": "Ana Costa",
+    "phone": "11977777777",
+    "email": "ana@email.com",
+    "id": "mqgoaq6hpp20a154otf",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.937Z",
+    "updatedAt": "2026-06-16T13:23:40.937Z"
+  },
+  {
+    "name": "Pedro Santos",
+    "phone": "11966666666",
+    "id": "mqgoaq6up5cs0ac43e",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.950Z",
+    "updatedAt": "2026-06-16T13:23:40.950Z"
+  },
+  {
+    "name": "Lucia Ferreira",
+    "phone": "11955555555",
+    "email": "lucia@email.com",
+    "id": "mqgoaq70tgfv8qr9p1",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.956Z",
+    "updatedAt": "2026-06-16T13:23:40.956Z"
+  },
+  {
+    "name": "Marcia",
+    "phone": "31986440219",
+    "id": "mqgpi1ypuhlmwgpr9le",
+    "active": true,
+    "createdAt": "2026-06-16T13:57:22.417Z",
+    "updatedAt": "2026-06-16T13:57:22.417Z"
+  }
+]

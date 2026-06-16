@@ -1,0 +1,98 @@
+[
+  {
+    "name": "Progressiva",
+    "description": "Escova progressiva",
+    "duration": 120,
+    "price": 150,
+    "commission": 45,
+    "category": "Tratamento",
+    "id": "mqgoaq2f7gm12hwzdko",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.791Z",
+    "updatedAt": "2026-06-16T13:23:40.791Z"
+  },
+  {
+    "name": "Manicure",
+    "description": "Manicure completa",
+    "duration": 30,
+    "price": 30,
+    "commission": 12,
+    "category": "Manicure/Pedicure",
+    "id": "mqgoaq3i1wyk570ueuf",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.831Z",
+    "updatedAt": "2026-06-16T13:23:40.831Z"
+  },
+  {
+    "name": "Pedicure",
+    "description": "Pedicure completa",
+    "duration": 30,
+    "price": 35,
+    "commission": 14,
+    "category": "Manicure/Pedicure",
+    "id": "mqgoaq3uawcmlntx87a",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.842Z",
+    "updatedAt": "2026-06-16T13:23:40.842Z"
+  },
+  {
+    "name": "Sobrancelha",
+    "description": "Design de sobrancelha",
+    "duration": 20,
+    "price": 25,
+    "commission": 10,
+    "category": "Sobrancelha",
+    "id": "mqgoaq48uu2v5mh5us8",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.856Z",
+    "updatedAt": "2026-06-16T13:23:40.856Z"
+  },
+  {
+    "name": "Maquiagem",
+    "description": "Maquiagem social ou festa",
+    "duration": 60,
+    "price": 100,
+    "commission": 35,
+    "category": "Maquiagem",
+    "id": "mqgoaq4i7md0yuvsxbo",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.866Z",
+    "updatedAt": "2026-06-16T13:23:40.866Z"
+  },
+  {
+    "name": "Coloração",
+    "description": "Coloração completa",
+    "duration": 90,
+    "price": 120,
+    "commission": 40,
+    "category": "Coloração",
+    "id": "mqgoaq4rfne5mo0fi55",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.875Z",
+    "updatedAt": "2026-06-16T13:23:40.875Z"
+  },
+  {
+    "name": "Mechas/Luzes",
+    "description": "Mechas ou luzes nos cabelos",
+    "duration": 120,
+    "price": 180,
+    "commission": 55,
+    "category": "Coloração",
+    "id": "mqgoaq58p9slutidhz",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.892Z",
+    "updatedAt": "2026-06-16T13:23:40.892Z"
+  },
+  {
+    "name": "Barba",
+    "description": "Barba completa com navalha",
+    "duration": 20,
+    "price": 25,
+    "commission": 8,
+    "category": "Barba",
+    "id": "mqgoaq5qr7fy3p2yt6s",
+    "active": true,
+    "createdAt": "2026-06-16T13:23:40.910Z",
+    "updatedAt": "2026-06-16T13:23:40.910Z"
+  }
+]
