@@ -18,6 +18,8 @@ import {
   Edit,
   Trash2,
   MessageCircle,
+  Check,
+  Bell,
 } from 'lucide-react'
 import { format, addDays, subDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -53,6 +55,7 @@ export default function AgendaPage() {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [pendingCount, setPendingCount] = useState(0)
 
   const fetchAppointments = async () => {
     setLoading(true)
@@ -62,27 +65,38 @@ export default function AgendaPage() {
       if (selectedProfessional) params.set('professionalId', selectedProfessional)
       const res = await fetch(`/api/appointments?${params}`)
       const data = await res.json()
-      setAppointments(data)
+      setAppointments(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Erro ao buscar agendamentos:', error)
+      setAppointments([])
     } finally {
       setLoading(false)
     }
+  }
+
+  const fetchPending = async () => {
+    try {
+      const res = await fetch('/api/appointments?status=PENDING')
+      const data = await res.json()
+      setPendingCount(Array.isArray(data) ? data.length : 0)
+    } catch {}
   }
 
   const fetchProfessionals = async () => {
     try {
       const res = await fetch('/api/professionals')
       const data = await res.json()
-      setProfessionals(data)
+      setProfessionals(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Erro ao buscar profissionais:', error)
+      setProfessionals([])
     }
   }
 
   useEffect(() => {
     fetchAppointments()
     fetchProfessionals()
+    fetchPending()
   }, [currentDate, selectedProfessional])
 
   const handlePrev = () => {
@@ -126,14 +140,16 @@ export default function AgendaPage() {
   }
 
   const statusColors: Record<string, string> = {
+    PENDING: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
     SCHEDULED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
     CONFIRMED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    IN_PROGRESS: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+    IN_PROGRESS: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
     COMPLETED: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
     CANCELLED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
   }
 
   const statusLabels: Record<string, string> = {
+    PENDING: '⏳ Pendente',
     SCHEDULED: 'Agendado',
     CONFIRMED: 'Confirmado',
     IN_PROGRESS: 'Em Andamento',
@@ -150,6 +166,38 @@ export default function AgendaPage() {
   return (
     <DashboardLayout>
       <div className="space-y-4">
+        {pendingCount > 0 && (
+          <Card className="border-2 border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900/20">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center animate-pulse">
+                  <Bell size={20} className="text-yellow-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-yellow-700 dark:text-yellow-400">
+                    {pendingCount} Solicitação(ões) Pendente(s)
+                  </p>
+                  <p className="text-sm text-yellow-600 dark:text-yellow-500">
+                    Confirme ou recuse os agendamentos abaixo.
+                  </p>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    const pending = appointments.filter(a => a.status === 'PENDING')
+                    if (pending.length > 0) {
+                      setSelectedAppointment(pending[0])
+                      setShowDetailsModal(true)
+                    }
+                  }}
+                >
+                  Ver
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Agenda</h1>
@@ -360,9 +408,15 @@ export default function AgendaPage() {
               </div>
             </div>
 
+            {selectedAppointment.status === 'PENDING' && (
+              <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-sm text-yellow-700 dark:text-yellow-400">
+                <p className="font-medium">⏳ Solicitação pendente de confirmação</p>
+              </div>
+            )}
+
             <div className="flex gap-2">
               <a
-                href={getWhatsAppLink(selectedAppointment.client.phone, `Olá ${selectedAppointment.client.name}! Confirmando seu agendamento para ${format(new Date(selectedAppointment.date), "dd/MM")} às ${selectedAppointment.startTime}.`)}
+                href={getWhatsAppLink(selectedAppointment.client.phone, `Olá ${selectedAppointment.client.name}! ${selectedAppointment.status === 'PENDING' ? 'Sua solicitação' : 'Confirmando seu agendamento'} para ${format(new Date(selectedAppointment.date), "dd/MM")} às ${selectedAppointment.startTime}.`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1"
@@ -372,7 +426,45 @@ export default function AgendaPage() {
                   WhatsApp
                 </Button>
               </a>
-              {selectedAppointment.status !== 'CANCELLED' && (
+              {selectedAppointment.status === 'PENDING' && (
+                <>
+                  <Button
+                    className="flex-1"
+                    onClick={async () => {
+                      await fetch(`/api/appointments/${selectedAppointment.id}/action`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'confirm' }),
+                      })
+                      setShowDetailsModal(false)
+                      setSelectedAppointment(null)
+                      fetchAppointments()
+                      fetchPending()
+                    }}
+                  >
+                    <Check size={18} />
+                    Confirmar
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={async () => {
+                      await fetch(`/api/appointments/${selectedAppointment.id}/action`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'reject' }),
+                      })
+                      setShowDetailsModal(false)
+                      setSelectedAppointment(null)
+                      fetchAppointments()
+                      fetchPending()
+                    }}
+                  >
+                    <Trash2 size={18} />
+                    Recusar
+                  </Button>
+                </>
+              )}
+              {selectedAppointment.status !== 'CANCELLED' && selectedAppointment.status !== 'PENDING' && (
                 <Button variant="danger" onClick={() => setShowCancelModal(true)}>
                   <Trash2 size={18} />
                   Cancelar

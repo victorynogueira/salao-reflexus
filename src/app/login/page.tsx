@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { Scissors, Eye, EyeOff, Loader2, Smartphone } from 'lucide-react'
+import { Scissors, Eye, EyeOff, Loader2, Smartphone, User } from 'lucide-react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [initStatus, setInitStatus] = useState<'idle' | 'initing' | 'done'>('idle')
+  const [sampleCreds, setSampleCreds] = useState<any>(null)
   const { login } = useAuth()
   const router = useRouter()
 
@@ -26,12 +27,20 @@ export default function LoginPage() {
 
     if (!seeded) {
       setInitStatus('initing')
+      const timeout = setTimeout(() => setInitStatus('done'), 5000)
+
       fetch('/api/init', { method: 'POST' })
-        .then(() => {
+        .then(r => r.json())
+        .then((data) => {
+          clearTimeout(timeout)
           try { localStorage.setItem('db-seeded', 'true') } catch {}
+          setSampleCreds(data)
           setInitStatus('done')
         })
-        .catch(() => setInitStatus('done'))
+        .catch(() => {
+          clearTimeout(timeout)
+          setInitStatus('done')
+        })
     }
   }, [])
 
@@ -88,8 +97,30 @@ export default function LoginPage() {
           )}
 
           {initStatus === 'done' && (
-            <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm">
-              Sistema inicializado! Use: <strong>admin@reflexus.com</strong> / <strong>admin123</strong>
+            <div className="mb-4 space-y-2">
+              <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm">
+                Sistema inicializado!
+              </div>
+              <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm">
+                <p className="font-medium text-blue-700 dark:text-blue-400 mb-2">Admin:</p>
+                <p className="text-xs text-blue-600 dark:text-blue-500">
+                  admin@reflexus.com / admin123
+                </p>
+              </div>
+              {sampleCreds && sampleCreds.samplePassword && (
+                <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-sm">
+                  <p className="font-medium text-purple-700 dark:text-purple-400 mb-2">Clientes de teste:</p>
+                  <p className="text-xs text-purple-600 dark:text-purple-500">
+                    Senha: {sampleCreds.samplePassword} (usuário gerado automaticamente)
+                  </p>
+                </div>
+              )}
+              <div className="p-3 rounded-lg bg-gold-50 dark:bg-gold-900/20 border border-gold-200 dark:border-gold-800 text-sm">
+                <p className="font-medium text-gold-700 dark:text-gold-400 mb-1">Profissional:</p>
+                <p className="text-xs text-gold-600 dark:text-gold-500">
+                  Rosa cadastrada automaticamente como única profissional.
+                </p>
+              </div>
             </div>
           )}
 
@@ -131,15 +162,12 @@ export default function LoginPage() {
           &copy; {new Date().getFullYear()} Salão Reflexus. Todos os direitos reservados.
         </p>
 
-        <div className="mt-4 p-3 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800">
-          <div className="flex items-center gap-2 text-primary-700 dark:text-primary-400 mb-2">
-            <Smartphone size={16} />
-            <span className="text-sm font-medium">Instalar no celular</span>
+          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <a href="/cliente" className="text-sm text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1 justify-center">
+              <User size={14} />
+              Sou Cliente - Ver Meus Agendamentos
+            </a>
           </div>
-          <p className="text-xs text-primary-600/80 dark:text-primary-400/80">
-            No navegador, toque em "Adicionar à tela inicial" para criar um atalho.
-          </p>
-        </div>
       </div>
 
       <PWAInstallPrompt />

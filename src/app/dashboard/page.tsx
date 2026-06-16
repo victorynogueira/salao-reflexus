@@ -49,12 +49,28 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetch('/api/dashboard')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch')
+        return res.json()
+      })
       .then(data => {
         setData(data)
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch(() => {
+        setData({
+          todayAppointments: 0,
+          monthAppointments: 0,
+          todayRevenue: 0,
+          monthRevenue: 0,
+          newClientsThisMonth: 0,
+          topServices: [],
+          topProfessionals: [],
+          recentTransactions: [],
+          dailyRevenue: [],
+        })
+        setLoading(false)
+      })
   }, [])
 
   if (loading) {
@@ -66,6 +82,20 @@ export default function DashboardPage() {
       </DashboardLayout>
     )
   }
+
+  if (!data) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64 text-gray-500">
+          Erro ao carregar dados do dashboard.
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  const safeTopServices = data.topServices || []
+  const safeTopProfessionals = data.topProfessionals || []
+  const safeDailyRevenue = data.dailyRevenue || []
 
   const stats = [
     {
@@ -135,7 +165,7 @@ export default function DashboardPage() {
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data?.dailyRevenue || []}>
+                  <BarChart data={safeDailyRevenue}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
                     <XAxis dataKey="date" className="text-gray-500" tick={{ fontSize: 12 }} />
                     <YAxis className="text-gray-500" tick={{ fontSize: 12 }} />
@@ -159,17 +189,17 @@ export default function DashboardPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={data?.topServices.map(s => ({
+                      data={safeTopServices.map(s => ({
                         name: s.service?.name || 'N/A',
                         value: s.count,
-                      })) || []}
+                      }))}
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
                       dataKey="value"
                       label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                     >
-                      {(data?.topServices || []).map((_, index) => (
+                      {safeTopServices.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -190,7 +220,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data?.topProfessionals.map((item, index) => (
+                {safeTopProfessionals.map((item, index) => (
                   <div key={item.professional?.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-400 font-semibold text-sm">
@@ -204,7 +234,7 @@ export default function DashboardPage() {
                     <Badge variant="info">{item.count} atendimentos</Badge>
                   </div>
                 ))}
-                {(!data?.topProfessionals || data.topProfessionals.length === 0) && (
+                {(safeTopProfessionals.length === 0) && (
                   <p className="text-center text-gray-500 dark:text-gray-400 py-4">Nenhum dado disponível</p>
                 )}
               </div>

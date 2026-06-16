@@ -1,21 +1,35 @@
 import { NextResponse } from 'next/server'
-import { getClients, createClient } from '@/lib/datastore'
+import { getClients, createClient, getClientByUsername } from '@/lib/datastore'
+import bcrypt from 'bcryptjs'
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
     const clients = await getClients(search)
-    return NextResponse.json(clients)
+    // Don't expose passwords
+    const safeClients = clients.map(c => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone,
+      username: c.username,
+      mustChangePassword: c.mustChangePassword,
+      notes: c.notes,
+      active: c.active,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+    }))
+    return NextResponse.json(safeClients)
   } catch (error) {
-    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })
+    console.error('Erro ao buscar clientes:', error)
+    return NextResponse.json([])
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, phone, email, notes } = body
+    const { name, phone, notes } = body
 
     if (!name || !phone) {
       return NextResponse.json({ error: 'Nome e telefone são obrigatórios' }, { status: 400 })
@@ -26,9 +40,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Telefone já cadastrado' }, { status: 409 })
     }
 
-    const client = await createClient({ name, phone, email, notes })
-    return NextResponse.json(client, { status: 201 })
-  } catch (error) {
-    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })
+    const client = await createClient({ name, phone, notes })
+
+    return NextResponse.json({
+      id: client.id,
+      name: client.name,
+      phone: client.phone,
+      username: client.username,
+      password: client.password,
+      mustChangePassword: client.mustChangePassword,
+    }, { status: 201 })
+  } catch (error: any) {
+    console.error('Erro ao criar cliente:', error)
+    return NextResponse.json({ error: error.message || 'Erro interno do servidor' }, { status: 500 })
   }
 }

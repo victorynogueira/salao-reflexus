@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getUserByEmail, createUser, createClient, createService, createProfessional } from '@/lib/datastore'
+import { getUserByEmail, createUser, createClient, createService, createProfessional, generatePassword } from '@/lib/datastore'
 import bcrypt from 'bcryptjs'
 
 export async function POST() {
@@ -21,28 +21,15 @@ export async function POST() {
       active: true,
     })
 
-    await createUser({
-      name: 'Recepção',
-      email: 'recepcao@reflexus.com',
-      password: hashedPassword,
-      role: 'RECEPTIONIST',
-      active: true,
+    // Rosa - única profissional do salão
+    const rosaWhatsapp = process.env.ROSA_WHATSAPP || '5511999999999'
+    await createProfessional({
+      name: 'Rosa',
+      specialty: 'Cabeleireira',
+      commission: 30,
+      phone: rosaWhatsapp,
+      whatsapp: rosaWhatsapp,
     })
-
-    const professionals = [
-      { name: 'Ana Silva', specialty: 'Cabelereira', commission: 30 },
-      { name: 'Carlos Santos', specialty: 'Barbeiro', commission: 25 },
-      { name: 'Maria Oliveira', specialty: 'Manicure/Pedicure', commission: 35 },
-      { name: 'João Pereira', specialty: 'Colorista', commission: 30 },
-    ]
-
-    for (const prof of professionals) {
-      await createProfessional({
-        name: prof.name,
-        specialty: prof.specialty,
-        commission: prof.commission,
-      })
-    }
 
     const services = [
       { name: 'Corte Masculino', description: 'Corte de cabelo masculino completo', duration: 30, price: 45, commission: 15, category: 'Corte' },
@@ -63,8 +50,30 @@ export async function POST() {
       await createService(svc)
     }
 
+    const samplePassword = generatePassword()
+    const hashedSamplePassword = await bcrypt.hash(samplePassword, 12)
+
+    const sampleClients = [
+      { name: 'Maria Souza', phone: '11999999999' },
+      { name: 'Ana Costa', phone: '11977777777' },
+      { name: 'Lucia Ferreira', phone: '11955555555' },
+    ]
+
+    for (const c of sampleClients) {
+      await createClient({
+        name: c.name,
+        phone: c.phone,
+        password: samplePassword,
+        mustChangePassword: true,
+      })
+    }
+
     console.log('Database seeded successfully!')
-    return NextResponse.json({ message: 'Database seeded successfully' })
+    return NextResponse.json({
+      message: 'Database seeded',
+      samplePassword,
+      rosaWhatsapp,
+    })
   } catch (error: any) {
     console.error('Seed error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })

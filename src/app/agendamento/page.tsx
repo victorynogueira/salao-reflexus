@@ -70,9 +70,15 @@ export default function AgendamentoPage() {
       fetch('/api/services').then(r => r.json()),
       fetch('/api/professionals').then(r => r.json()),
     ]).then(([c, s, p]) => {
-      setClients(c)
-      setServices(s)
-      setProfessionals(p)
+      setClients(Array.isArray(c) ? c : [])
+      setServices(Array.isArray(s) ? s : [])
+      setProfessionals(Array.isArray(p) ? p : [])
+      if (Array.isArray(p) && p.length > 0) setSelectedProfessional(p[0].id)
+      setLoading(false)
+    }).catch(() => {
+      setClients([])
+      setServices([])
+      setProfessionals([])
       setLoading(false)
     })
   }, [])
@@ -119,10 +125,8 @@ export default function AgendamentoPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           clientId: selectedClient?.id,
-          professionalId: selectedProfessional,
           date: selectedDate,
           startTime: selectedTime,
-          endTime,
           services: selectedServices.map(s => ({
             serviceId: s.id,
             price: s.price,
@@ -310,12 +314,21 @@ export default function AgendamentoPage() {
                 min={format(new Date(), 'yyyy-MM-dd')}
               />
 
-              <Select
-                label="Profissional"
-                value={selectedProfessional}
-                onChange={(e) => setSelectedProfessional(e.target.value)}
-                options={[{ value: '', label: 'Selecione um profissional' }, ...professionals.map(p => ({ value: p.id, label: p.name }))]}
-              />
+              {professionals.length > 1 ? (
+                <Select
+                  label="Profissional"
+                  value={selectedProfessional}
+                  onChange={(e) => setSelectedProfessional(e.target.value)}
+                  options={[{ value: '', label: 'Selecione um profissional' }, ...professionals.map(p => ({ value: p.id, label: p.name }))]}
+                />
+              ) : professionals.length === 1 && (
+                <div className="space-y-1">
+                  <label className="label-field">Profissional</label>
+                  <div className="px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm">
+                    {professionals[0].name}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="label-field">Horário Disponível</label>
@@ -378,8 +391,8 @@ export default function AgendamentoPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Profissional</span>
                   <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {professionals.find(p => p.id === selectedProfessional)?.name}
-                  </span>
+                  {professionals[0]?.name || 'Rosa'}
+                </span>
                 </div>
               </div>
 
@@ -424,7 +437,7 @@ export default function AgendamentoPage() {
               disabled={
                 (step === 1 && !selectedClient) ||
                 (step === 2 && selectedServices.length === 0) ||
-                (step === 3 && (!selectedTime || !selectedProfessional))
+                (step === 3 && !selectedTime)
               }
             >
               Próximo

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getClient, getAppointments, updateClient, deleteClient } from '@/lib/datastore'
+import bcrypt from 'bcryptjs'
 
 export async function GET(
   request: Request,
@@ -16,7 +17,19 @@ export async function GET(
       .filter(a => a.clientId === params.id)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-    return NextResponse.json({ ...client, appointments: clientAppointments })
+    const safeClient = {
+      id: client.id,
+      name: client.name,
+      phone: client.phone,
+      username: client.username,
+      mustChangePassword: client.mustChangePassword,
+      notes: client.notes,
+      active: client.active,
+      createdAt: client.createdAt,
+      appointments: clientAppointments,
+    }
+
+    return NextResponse.json(safeClient)
   } catch (error) {
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })
   }
@@ -28,7 +41,28 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const client = await updateClient(params.id, body)
+    const { name, phone, notes, regeneratePassword } = body
+
+    if (regeneratePassword) {
+      const newPassword = Math.random().toString(36).slice(-8)
+      const hashedPassword = await bcrypt.hash(newPassword, 12)
+      const client = await updateClient(params.id, {
+        password: hashedPassword,
+        mustChangePassword: true,
+      })
+      if (!client) {
+        return NextResponse.json({ error: 'Cliente não encontrado' }, { status: 404 })
+      }
+      return NextResponse.json({
+        id: client.id,
+        name: client.name,
+        username: client.username,
+        newPassword,
+        mustChangePassword: true,
+      })
+    }
+
+    const client = await updateClient(params.id, { name, phone, notes })
     if (!client) {
       return NextResponse.json({ error: 'Cliente não encontrado' }, { status: 404 })
     }

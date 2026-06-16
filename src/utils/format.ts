@@ -45,6 +45,8 @@ export function getWhatsAppLink(phone: string, message: string): string {
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`
 }
 
+export const ROSA_WHATSAPP = '5500000000000'
+
 export function calculateEndTime(startTime: string, durationMinutes: number): string {
   const [hours, minutes] = startTime.split(':').map(Number)
   const totalMinutes = hours * 60 + minutes + durationMinutes

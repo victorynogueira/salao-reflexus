@@ -6,7 +6,9 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import Card, { CardContent, CardHeader } from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
-import { ArrowLeft, Phone, Mail, Calendar, DollarSign, Clock, MessageCircle } from 'lucide-react'
+import Modal from '@/components/ui/Modal'
+import Input from '@/components/ui/Input'
+import { ArrowLeft, Phone, Calendar, DollarSign, Clock, MessageCircle, Key } from 'lucide-react'
 import { formatCurrency, formatDate, formatPhone, getWhatsAppLink } from '@/utils/format'
 
 interface ClientDetail {
@@ -39,6 +41,9 @@ export default function ClientDetailPage() {
   const router = useRouter()
   const [client, setClient] = useState<ClientDetail | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [passwordMsg, setPasswordMsg] = useState('')
 
   useEffect(() => {
     fetch(`/api/clients/${params.id}`)
@@ -108,22 +113,22 @@ export default function ClientDetailPage() {
                 </div>
 
                 <div className="space-y-3">
+                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">Dados de Acesso</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">Usuário:</span>
+                      <span className="text-sm font-mono font-bold text-gray-900 dark:text-gray-100">{(client as any).username || 'N/A'}</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">Senha:</span>
+                      <span className="text-sm font-mono text-gray-900 dark:text-gray-100">••••••••</span>
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
                     <Phone size={18} />
                     <span>{formatPhone(client.phone)}</span>
                   </div>
-                  {client.email && (
-                    <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
-                      <Mail size={18} />
-                      <span>{client.email}</span>
-                    </div>
-                  )}
-                  {client.notes && (
-                    <div className="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 text-sm text-gray-600 dark:text-gray-400">
-                      <p className="font-medium mb-1">Observações:</p>
-                      {client.notes}
-                    </div>
-                  )}
                 </div>
 
                 <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="mt-4 w-full">
@@ -132,6 +137,11 @@ export default function ClientDetailPage() {
                     Enviar WhatsApp
                   </Button>
                 </a>
+
+                <Button variant="secondary" className="w-full mt-2" onClick={() => { setShowPasswordModal(true); setNewPassword(''); setPasswordMsg('') }}>
+                  <Key size={18} />
+                  {client.password ? 'Redefinir Senha' : 'Criar Senha de Acesso'}
+                </Button>
               </CardContent>
             </Card>
 
@@ -228,6 +238,57 @@ export default function ClientDetailPage() {
           </div>
         </div>
       </div>
+
+      <Modal isOpen={showPasswordModal} onClose={() => setShowPasswordModal(false)} title="Senha de Acesso da Cliente" size="sm">
+        <div className="p-6 space-y-4">
+          <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm text-blue-700 dark:text-blue-400">
+            <p className="font-medium mb-1">Criar senha para acesso da cliente</p>
+            <p className="text-xs">A cliente usará o email cadastrado ({client.email || 'não cadastrado'}) e esta senha para ver seus agendamentos.</p>
+          </div>
+
+          <Input
+            label="Nova Senha"
+            type="text"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="Mínimo 6 caracteres"
+          />
+
+          {passwordMsg && (
+            <p className="text-sm text-green-600">{passwordMsg}</p>
+          )}
+
+            <div className="flex gap-3">
+              <Button variant="secondary" className="flex-1" onClick={() => setShowPasswordModal(false)}>
+                Cancelar
+              </Button>
+              <Button
+                className="flex-1"
+                disabled={newPassword.length < 4}
+                onClick={async () => {
+                  try {
+                    const bcrypt = await import('bcryptjs')
+                    const hash = await bcrypt.hash(newPassword, 12)
+                    const res = await fetch(`/api/clients/${params.id}`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ password: hash, forcePasswordChange: true }),
+                    })
+                    if (res.ok) {
+                      setPasswordMsg('Senha redefinida! A cliente devera trocar no proximo acesso.')
+                      setTimeout(() => setShowPasswordModal(false), 2000)
+                    }
+                  } catch {
+                    setPasswordMsg('Erro ao criar senha')
+                  }
+                }}
+              >
+                <Key size={16} />
+                Redefinir
+              </Button>
+            </div>
+        </div>
+      </Modal>
     </DashboardLayout>
   )
 }

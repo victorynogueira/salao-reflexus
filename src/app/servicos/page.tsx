@@ -57,9 +57,10 @@ export default function ServicesPage() {
       if (categoryFilter) params.set('category', categoryFilter)
       const res = await fetch(`/api/services?${params}`)
       const data = await res.json()
-      setServices(data)
+      setServices(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Erro ao buscar serviços:', error)
+      setServices([])
     } finally {
       setLoading(false)
     }

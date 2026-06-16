@@ -64,9 +64,10 @@ export default function FinanceiroPage() {
       params.set('endDate', dateRange.endDate)
       const res = await fetch(`/api/transactions?${params}`)
       const data = await res.json()
-      setTransactions(data)
+      setTransactions(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Erro ao buscar transações:', error)
+      setTransactions([])
     } finally {
       setLoading(false)
     }
