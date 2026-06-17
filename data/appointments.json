@@ -1,35 +1,36 @@
 [
   {
-    "clientId": "mqgpi1ypuhlmwgpr9le",
+    "clientId": "mqh2jsyjk3fo7mj6kee",
     "client": {
-      "name": "Marcia",
+      "id": "mqh2jsyjk3fo7mj6kee",
+      "name": "Victor Yuri",
       "phone": "31986440219",
-      "id": "mqgpi1ypuhlmwgpr9le",
+      "username": "victor6078",
       "active": true,
-      "createdAt": "2026-06-16T13:57:22.417Z",
-      "updatedAt": "2026-06-16T13:57:22.417Z"
+      "createdAt": "2026-06-16T20:02:39.067Z",
+      "updatedAt": "2026-06-16T20:03:15.267Z"
     },
-    "professionalId": "mqgoamtcrd921bmu0ag",
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
     "professional": {
-      "name": "Ana Silva",
-      "specialty": "Cabelereira",
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
       "commission": 30,
-      "id": "mqgoamtcrd921bmu0ag",
       "active": true,
-      "createdAt": "2026-06-16T13:23:36.576Z",
-      "updatedAt": "2026-06-16T13:23:36.576Z"
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
     },
     "date": "2026-06-16",
-    "startTime": "08:15",
-    "endTime": "09:45",
-    "notes": "",
+    "startTime": "08:00",
+    "endTime": "09:30",
+    "notes": "Solicitação via WhatsApp - Coloração",
     "totalPrice": 120,
     "totalDuration": 90,
     "status": "SCHEDULED",
     "paid": false,
     "services": [
       {
-        "serviceId": "mqgoaq4rfne5mo0fi55",
+        "serviceId": "mqh2ix0j5deh7wecdda",
         "service": {
           "name": "Coloração",
           "description": "Coloração completa",
@@ -37,43 +38,44 @@
           "price": 120,
           "commission": 40,
           "category": "Coloração",
-          "id": "mqgoaq4rfne5mo0fi55",
+          "id": "mqh2ix0j5deh7wecdda",
           "active": true,
-          "createdAt": "2026-06-16T13:23:40.875Z",
-          "updatedAt": "2026-06-16T13:23:40.875Z"
+          "createdAt": "2026-06-16T20:01:57.667Z",
+          "updatedAt": "2026-06-16T20:01:57.667Z"
         },
         "price": 120,
-        "commission": 40,
+        "commission": 84,
         "duration": 90
       }
     ],
-    "id": "mqgpigcs1pkhlhivxo8",
-    "createdAt": "2026-06-16T13:57:41.068Z",
-    "updatedAt": "2026-06-16T13:57:41.068Z"
+    "id": "mqh2kuizwni825r3ojp",
+    "createdAt": "2026-06-16T20:03:27.755Z",
+    "updatedAt": "2026-06-16T20:05:15.167Z"
   },
   {
-    "clientId": "mqgoaq4bnl00licy87i",
+    "clientId": "mqh2jsyjk3fo7mj6kee",
     "client": {
-      "name": "Pedro Santos",
-      "phone": "11966666666",
-      "id": "mqgoaq4bnl00licy87i",
+      "id": "mqh2jsyjk3fo7mj6kee",
+      "name": "Victor Yuri",
+      "phone": "31986440219",
+      "username": "victor6078",
       "active": true,
-      "createdAt": "2026-06-16T13:23:40.859Z",
-      "updatedAt": "2026-06-16T13:23:40.859Z"
+      "createdAt": "2026-06-16T20:02:39.067Z",
+      "updatedAt": "2026-06-16T20:03:15.267Z"
     },
-    "professionalId": "mqgoamm6zjhyp8kuvfs",
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
     "professional": {
-      "name": "Maria Oliveira",
-      "specialty": "Manicure/Pedicure",
-      "commission": 35,
-      "id": "mqgoamm6zjhyp8kuvfs",
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
       "active": true,
-      "createdAt": "2026-06-16T13:23:36.318Z",
-      "updatedAt": "2026-06-16T13:23:36.318Z"
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
     },
     "date": "2026-06-17",
-    "startTime": "08:15",
-    "endTime": "08:35",
+    "startTime": "08:30",
+    "endTime": "08:50",
     "notes": "",
     "totalPrice": 25,
     "totalDuration": 20,
@@ -81,7 +83,7 @@
     "paid": false,
     "services": [
       {
-        "serviceId": "mqgoaq5qr7fy3p2yt6s",
+        "serviceId": "mqh2ix17q8jxjzpowh8",
         "service": {
           "name": "Barba",
           "description": "Barba completa com navalha",
@@ -89,18 +91,18 @@
           "price": 25,
           "commission": 8,
           "category": "Barba",
-          "id": "mqgoaq5qr7fy3p2yt6s",
+          "id": "mqh2ix17q8jxjzpowh8",
           "active": true,
-          "createdAt": "2026-06-16T13:23:40.910Z",
-          "updatedAt": "2026-06-16T13:23:40.910Z"
+          "createdAt": "2026-06-16T20:01:57.691Z",
+          "updatedAt": "2026-06-16T20:01:57.691Z"
         },
         "price": 25,
         "commission": 8,
         "duration": 20
       }
     ],
-    "id": "mqgpjw7iw60qxbqswz",
-    "createdAt": "2026-06-16T13:58:48.270Z",
-    "updatedAt": "2026-06-16T13:58:48.270Z"
+    "id": "mqh2mxbxzfy7to68tn",
+    "createdAt": "2026-06-16T20:05:04.702Z",
+    "updatedAt": "2026-06-16T20:05:04.702Z"
   }
 ]

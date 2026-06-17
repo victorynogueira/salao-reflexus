@@ -1,101 +1,13 @@
 [
   {
-    "name": "Carlos Santos",
-    "specialty": "Barbeiro",
-    "commission": 25,
-    "id": "mqgoamkez720kb57ka9",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:36.255Z",
-    "updatedAt": "2026-06-16T13:23:36.255Z"
-  },
-  {
-    "name": "Maria Oliveira",
-    "specialty": "Manicure/Pedicure",
-    "commission": 35,
-    "id": "mqgoamm6zjhyp8kuvfs",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:36.318Z",
-    "updatedAt": "2026-06-16T13:23:36.318Z"
-  },
-  {
-    "name": "João Pereira",
-    "specialty": "Colorista",
+    "name": "Rosa",
+    "specialty": "Cabeleireira",
     "commission": 30,
-    "id": "mqgoamp6kg19l19vgac",
+    "phone": "5511999999999",
+    "whatsapp": "5511999999999",
+    "id": "mqh2iwvy3h3mh8fd2z4",
     "active": true,
-    "createdAt": "2026-06-16T13:23:36.426Z",
-    "updatedAt": "2026-06-16T13:23:36.426Z"
-  },
-  {
-    "name": "Ana Silva",
-    "specialty": "Cabelereira",
-    "commission": 30,
-    "id": "mqgoamtcrd921bmu0ag",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:36.576Z",
-    "updatedAt": "2026-06-16T13:23:36.576Z"
-  },
-  {
-    "name": "Carlos Santos",
-    "specialty": "Barbeiro",
-    "commission": 25,
-    "id": "mqgoamvqouyyu4lnp6s",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:36.662Z",
-    "updatedAt": "2026-06-16T13:23:36.662Z"
-  },
-  {
-    "name": "Maria Oliveira",
-    "specialty": "Manicure/Pedicure",
-    "commission": 35,
-    "id": "mqgoamydtvfmisybjj",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:36.757Z",
-    "updatedAt": "2026-06-16T13:23:36.757Z"
-  },
-  {
-    "name": "João Pereira",
-    "specialty": "Colorista",
-    "commission": 30,
-    "id": "mqgoan12eya087as0fd",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:36.854Z",
-    "updatedAt": "2026-06-16T13:23:36.854Z"
-  },
-  {
-    "name": "Ana Silva",
-    "specialty": "Cabelereira",
-    "commission": 30,
-    "id": "mqgoanryu5racbx2ec",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:37.822Z",
-    "updatedAt": "2026-06-16T13:23:37.822Z"
-  },
-  {
-    "name": "Carlos Santos",
-    "specialty": "Barbeiro",
-    "commission": 25,
-    "id": "mqgoao6tc6xpqyl6fmj",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:38.357Z",
-    "updatedAt": "2026-06-16T13:23:38.471Z"
-  },
-  {
-    "name": "Maria Oliveira",
-    "specialty": "Manicure/Pedicure",
-    "commission": 35,
-    "id": "mqgoaofttthptixkwa7",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:38.681Z",
-    "updatedAt": "2026-06-16T13:23:38.681Z"
-  },
-  {
-    "name": "João Pereira",
-    "specialty": "Colorista",
-    "commission": 30,
-    "id": "mqgoaomk10z05c12jt3p",
-    "active": true,
-    "createdAt": "2026-06-16T13:23:38.924Z",
-    "updatedAt": "2026-06-16T13:23:38.924Z"
+    "createdAt": "2026-06-16T20:01:57.502Z",
+    "updatedAt": "2026-06-16T20:01:57.502Z"
   }
 ]

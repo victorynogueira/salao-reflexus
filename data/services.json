@@ -1,15 +1,63 @@
 [
   {
+    "name": "Corte Masculino",
+    "description": "Corte de cabelo masculino completo",
+    "duration": 30,
+    "price": 45,
+    "commission": 15,
+    "category": "Corte",
+    "id": "mqh2iwxa7v8kkj7ytco",
+    "active": true,
+    "createdAt": "2026-06-16T20:01:57.550Z",
+    "updatedAt": "2026-06-16T20:01:57.550Z"
+  },
+  {
+    "name": "Corte Feminino",
+    "description": "Corte de cabelo feminino completo",
+    "duration": 45,
+    "price": 65,
+    "commission": 20,
+    "category": "Corte",
+    "id": "mqh2iwxnf14ctqynwzl",
+    "active": true,
+    "createdAt": "2026-06-16T20:01:57.563Z",
+    "updatedAt": "2026-06-16T20:01:57.563Z"
+  },
+  {
+    "name": "Escova",
+    "description": "Escova modelada",
+    "duration": 60,
+    "price": 80,
+    "commission": 25,
+    "category": "Escova",
+    "id": "mqh2iwy12boulcmezj8",
+    "active": true,
+    "createdAt": "2026-06-16T20:01:57.577Z",
+    "updatedAt": "2026-06-16T20:01:57.577Z"
+  },
+  {
+    "name": "Hidratação",
+    "description": "Hidratação profunda dos fios",
+    "duration": 40,
+    "price": 55,
+    "commission": 18,
+    "category": "Tratamento",
+    "id": "mqh2iwyhqsmn6gi9rsi",
+    "active": true,
+    "createdAt": "2026-06-16T20:01:57.593Z",
+    "updatedAt": "2026-06-16T20:01:57.593Z"
+  },
+  {
     "name": "Progressiva",
     "description": "Escova progressiva",
     "duration": 120,
     "price": 150,
     "commission": 45,
     "category": "Tratamento",
-    "id": "mqgoaq2f7gm12hwzdko",
+    "id": "mqh2iwyyraxsvh21ei",
     "active": true,
-    "createdAt": "2026-06-16T13:23:40.791Z",
-    "updatedAt": "2026-06-16T13:23:40.791Z"
+    "createdAt": "2026-06-16T20:01:57.610Z",
+    "updatedAt": "2026-06-16T20:01:57.610Z"
   },
   {
     "name": "Manicure",
@@ -18,10 +66,10 @@
     "price": 30,
     "commission": 12,
     "category": "Manicure/Pedicure",
-    "id": "mqgoaq3i1wyk570ueuf",
+    "id": "mqh2iwz8aeb7kzx1bvl",
     "active": true,
-    "createdAt": "2026-06-16T13:23:40.831Z",
-    "updatedAt": "2026-06-16T13:23:40.831Z"
+    "createdAt": "2026-06-16T20:01:57.620Z",
+    "updatedAt": "2026-06-16T20:01:57.620Z"
   },
   {
     "name": "Pedicure",
@@ -30,10 +78,10 @@
     "price": 35,
     "commission": 14,
     "category": "Manicure/Pedicure",
-    "id": "mqgoaq3uawcmlntx87a",
+    "id": "mqh2iwzn6y8t4vtcjbq",
     "active": true,
-    "createdAt": "2026-06-16T13:23:40.842Z",
-    "updatedAt": "2026-06-16T13:23:40.842Z"
+    "createdAt": "2026-06-16T20:01:57.635Z",
+    "updatedAt": "2026-06-16T20:01:57.635Z"
   },
   {
     "name": "Sobrancelha",
@@ -42,10 +90,10 @@
     "price": 25,
     "commission": 10,
     "category": "Sobrancelha",
-    "id": "mqgoaq48uu2v5mh5us8",
+    "id": "mqh2iwzzedq2soayvo4",
     "active": true,
-    "createdAt": "2026-06-16T13:23:40.856Z",
-    "updatedAt": "2026-06-16T13:23:40.856Z"
+    "createdAt": "2026-06-16T20:01:57.647Z",
+    "updatedAt": "2026-06-16T20:01:57.647Z"
   },
   {
     "name": "Maquiagem",
@@ -54,10 +102,10 @@
     "price": 100,
     "commission": 35,
     "category": "Maquiagem",
-    "id": "mqgoaq4i7md0yuvsxbo",
+    "id": "mqh2ix0auanjjg140gf",
     "active": true,
-    "createdAt": "2026-06-16T13:23:40.866Z",
-    "updatedAt": "2026-06-16T13:23:40.866Z"
+    "createdAt": "2026-06-16T20:01:57.658Z",
+    "updatedAt": "2026-06-16T20:01:57.658Z"
   },
   {
     "name": "Coloração",
@@ -66,10 +114,10 @@
     "price": 120,
     "commission": 40,
     "category": "Coloração",
-    "id": "mqgoaq4rfne5mo0fi55",
+    "id": "mqh2ix0j5deh7wecdda",
     "active": true,
-    "createdAt": "2026-06-16T13:23:40.875Z",
-    "updatedAt": "2026-06-16T13:23:40.875Z"
+    "createdAt": "2026-06-16T20:01:57.667Z",
+    "updatedAt": "2026-06-16T20:01:57.667Z"
   },
   {
     "name": "Mechas/Luzes",
@@ -78,10 +126,10 @@
     "price": 180,
     "commission": 55,
     "category": "Coloração",
-    "id": "mqgoaq58p9slutidhz",
+    "id": "mqh2ix0wrjr9pwolf2",
     "active": true,
-    "createdAt": "2026-06-16T13:23:40.892Z",
-    "updatedAt": "2026-06-16T13:23:40.892Z"
+    "createdAt": "2026-06-16T20:01:57.680Z",
+    "updatedAt": "2026-06-16T20:01:57.680Z"
   },
   {
     "name": "Barba",
@@ -90,9 +138,9 @@
     "price": 25,
     "commission": 8,
     "category": "Barba",
-    "id": "mqgoaq5qr7fy3p2yt6s",
+    "id": "mqh2ix17q8jxjzpowh8",
     "active": true,
-    "createdAt": "2026-06-16T13:23:40.910Z",
-    "updatedAt": "2026-06-16T13:23:40.910Z"
+    "createdAt": "2026-06-16T20:01:57.691Z",
+    "updatedAt": "2026-06-16T20:01:57.691Z"
   }
 ]
