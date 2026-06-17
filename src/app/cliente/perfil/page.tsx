@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ClientPortalLayout from '@/components/layout/ClientPortalLayout'
-import Card, { CardContent, CardHeader } from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
-import { User, Phone, AtSign, Key, Eye, EyeOff, LogOut, Check, Loader2, Save, Calendar, Clock } from 'lucide-react'
-import { formatDate } from '@/utils/format'
+import { User, Phone, AtSign, Key, Eye, EyeOff, LogOut, Check, Save } from 'lucide-react'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 export default function ProfilePage() {
   const [client, setClient] = useState<any>(null)
@@ -48,9 +48,9 @@ export default function ProfilePage() {
     setLoading(false)
   }, [])
 
-  const showMessage = (msg: string, type: 'success' | 'error' = 'success') => {
-    setSuccess(type === 'success' ? msg : '')
-    setError(type === 'error' ? msg : '')
+  const showMsg = (msg: string, type: 'success' | 'error' = 'success') => {
+    if (type === 'success') { setSuccess(msg); setError('') }
+    else { setError(msg); setSuccess('') }
     setTimeout(() => { setSuccess(''); setError('') }, 3000)
   }
 
@@ -67,13 +67,13 @@ export default function ProfilePage() {
         const updated = await res.json()
         setClient({ ...client, name: updated.name })
         localStorage.setItem('client-user', JSON.stringify({ ...client, name: updated.name }))
-        showMessage('Nome atualizado!')
+        showMsg('Nome atualizado!')
         setEditingName(false)
       } else {
-        showMessage('Erro ao atualizar', 'error')
+        showMsg('Erro ao atualizar', 'error')
       }
     } catch {
-      showMessage('Erro ao conectar', 'error')
+      showMsg('Erro ao conectar', 'error')
     } finally {
       setNameLoading(false)
     }
@@ -92,13 +92,13 @@ export default function ProfilePage() {
         const updated = await res.json()
         setClient({ ...client, phone: updated.phone })
         localStorage.setItem('client-user', JSON.stringify({ ...client, phone: updated.phone }))
-        showMessage('Telefone atualizado!')
+        showMsg('Telefone atualizado!')
         setEditingPhone(false)
       } else {
-        showMessage('Erro ao atualizar', 'error')
+        showMsg('Erro ao atualizar', 'error')
       }
     } catch {
-      showMessage('Erro ao conectar', 'error')
+      showMsg('Erro ao conectar', 'error')
     } finally {
       setPhoneLoading(false)
     }
@@ -106,48 +106,30 @@ export default function ProfilePage() {
 
   const changePassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    setSuccess('')
-
-    if (newPassword.length < 4) {
-      showMessage('Mínimo 4 caracteres', 'error')
-      return
-    }
-    if (newPassword !== confirmPassword) {
-      showMessage('Senhas não coincidem', 'error')
-      return
-    }
+    if (newPassword.length < 4) { showMsg('Mínimo 4 caracteres', 'error'); return }
+    if (newPassword !== confirmPassword) { showMsg('Senhas não coincidem', 'error'); return }
 
     setPasswordLoading(true)
     try {
       const res = await fetch('/api/client/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clientId: client.id,
-          currentPassword,
-          newPassword,
-        }),
+        body: JSON.stringify({ clientId: client.id, currentPassword, newPassword }),
       })
-
       const data = await res.json()
-      if (!res.ok) {
-        showMessage(data.error || 'Erro ao alterar senha', 'error')
-      } else {
-        const updatedUser = { ...client, mustChangePassword: false }
-        setClient(updatedUser)
-        localStorage.setItem('client-user', JSON.stringify(updatedUser))
-        showMessage('Senha alterada com sucesso!')
+      if (!res.ok) { showMsg(data.error || 'Erro ao alterar', 'error') }
+      else {
+        const u = { ...client, mustChangePassword: false }
+        setClient(u)
+        localStorage.setItem('client-user', JSON.stringify(u))
+        showMsg('Senha alterada!')
         setShowPasswordForm(false)
         setCurrentPassword('')
         setNewPassword('')
         setConfirmPassword('')
       }
-    } catch {
-      showMessage('Erro ao conectar', 'error')
-    } finally {
-      setPasswordLoading(false)
-    }
+    } catch { showMsg('Erro ao conectar', 'error') }
+    finally { setPasswordLoading(false) }
   }
 
   const handleLogout = () => {
@@ -156,203 +138,117 @@ export default function ProfilePage() {
     router.push('/cliente')
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-      </div>
-    )
-  }
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+    </div>
+  )
+
+  const createdDate = client?.createdAt ? format(new Date(client.createdAt), "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : '-'
 
   return (
     <ClientPortalLayout activeTab="perfil">
       <div className="space-y-4">
         {(success || error) && (
           <div className={`p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${
-            success
-              ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
-              : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
+            success ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200'
           }`}>
             <Check size={16} />
             {success || error}
           </div>
         )}
 
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
-                {client?.name?.charAt(0).toUpperCase()}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+              {client?.name?.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{client?.name}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">@{client?.username}</p>
+              {client?.mustChangePassword && <Badge variant="warning" className="mt-1">Trocar senha</Badge>}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+          <div className="p-4">
+            <label className="text-xs font-medium text-gray-400 uppercase tracking-wide">Nome</label>
+            {editingName ? (
+              <div className="flex gap-2 mt-2">
+                <Input value={nameValue} onChange={(e) => setNameValue(e.target.value)} className="flex-1" />
+                <Button size="sm" onClick={updateName} loading={nameLoading}><Save size={16} /></Button>
+                <Button size="sm" variant="ghost" onClick={() => { setEditingName(false); setNameValue(client.name) }}>Cancelar</Button>
               </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{client?.name}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">@{client?.username}</p>
-                {client?.mustChangePassword && (
-                  <Badge variant="warning" className="mt-1">Trocar senha</Badge>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <User size={18} className="text-primary-600" />
-              Dados Pessoais
-            </h3>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Nome</label>
-              {editingName ? (
-                <div className="flex gap-2 mt-1">
-                  <Input
-                    value={nameValue}
-                    onChange={(e) => setNameValue(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button size="sm" onClick={updateName} loading={nameLoading}>
-                    <Save size={16} />
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => { setEditingName(false); setNameValue(client.name) }}>
-                    Cancelar
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between mt-1">
-                  <p className="font-medium text-gray-900 dark:text-gray-100">{client?.name}</p>
-                  <button onClick={() => setEditingName(true)} className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
-                    Editar
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Telefone</label>
-              {editingPhone ? (
-                <div className="flex gap-2 mt-1">
-                  <Input
-                    value={phoneValue}
-                    onChange={(e) => setPhoneValue(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button size="sm" onClick={updatePhone} loading={phoneLoading}>
-                    <Save size={16} />
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => { setEditingPhone(false); setPhoneValue(client.phone) }}>
-                    Cancelar
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between mt-1">
-                  <p className="font-medium text-gray-900 dark:text-gray-100">{client?.phone}</p>
-                  <button onClick={() => setEditingPhone(true)} className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
-                    Editar
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
-              <div>
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Usuário</label>
-                <div className="flex items-center gap-1 mt-1">
-                  <AtSign size={14} className="text-gray-400" />
-                  <p className="font-medium text-gray-900 dark:text-gray-100">@{client?.username}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Cadastro</label>
-              <div className="flex items-center gap-1 mt-1">
-                <Calendar size={14} className="text-gray-400" />
-                <p className="text-sm text-gray-900 dark:text-gray-100">{formatDate(client?.createdAt)}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Key size={18} className="text-primary-600" />
-              Senha
-            </h3>
-          </CardHeader>
-          <CardContent>
-            {!showPasswordForm ? (
-              <Button variant="secondary" onClick={() => setShowPasswordForm(true)} className="w-full">
-                <Key size={18} />
-                Alterar Senha
-              </Button>
             ) : (
-              <form onSubmit={changePassword} className="space-y-3">
-                <div className="relative">
-                  <Input
-                    label="Senha Atual"
-                    type={showCurrent ? 'text' : 'password'}
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="Sua senha atual"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrent(!showCurrent)}
-                    className="absolute right-3 top-[34px] text-gray-400"
-                  >
-                    {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <Input
-                    label="Nova Senha"
-                    type={showNew ? 'text' : 'password'}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Mínimo 4 caracteres"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNew(!showNew)}
-                    className="absolute right-3 top-[34px] text-gray-400"
-                  >
-                    {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-
-                <Input
-                  label="Confirmar Nova Senha"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Repita a nova senha"
-                  required
-                />
-
-                <div className="flex gap-2">
-                  <Button type="submit" className="flex-1" loading={passwordLoading}>
-                    <Check size={18} />
-                    Salvar
-                  </Button>
-                  <Button type="button" variant="ghost" onClick={() => {
-                    setShowPasswordForm(false)
-                    setCurrentPassword('')
-                    setNewPassword('')
-                    setConfirmPassword('')
-                  }}>
-                    Cancelar
-                  </Button>
-                </div>
-              </form>
+              <div className="flex items-center justify-between mt-1">
+                <p className="font-medium text-gray-900 dark:text-gray-100">{client?.name}</p>
+                <button onClick={() => setEditingName(true)} className="text-sm text-primary-600 dark:text-primary-400 hover:underline">Editar</button>
+              </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+
+          <div className="p-4">
+            <label className="text-xs font-medium text-gray-400 uppercase tracking-wide">Telefone</label>
+            {editingPhone ? (
+              <div className="flex gap-2 mt-2">
+                <Input value={phoneValue} onChange={(e) => setPhoneValue(e.target.value)} className="flex-1" />
+                <Button size="sm" onClick={updatePhone} loading={phoneLoading}><Save size={16} /></Button>
+                <Button size="sm" variant="ghost" onClick={() => { setEditingPhone(false); setPhoneValue(client.phone) }}>Cancelar</Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between mt-1">
+                <p className="font-medium text-gray-900 dark:text-gray-100">{client?.phone}</p>
+                <button onClick={() => setEditingPhone(true)} className="text-sm text-primary-600 dark:text-primary-400 hover:underline">Editar</button>
+              </div>
+            )}
+          </div>
+
+          <div className="p-4">
+            <label className="text-xs font-medium text-gray-400 uppercase tracking-wide">Usuário</label>
+            <div className="flex items-center gap-1 mt-1">
+              <AtSign size={14} className="text-gray-400" />
+              <p className="font-medium text-gray-900 dark:text-gray-100">@{client?.username}</p>
+            </div>
+          </div>
+
+          <div className="p-4">
+            <label className="text-xs font-medium text-gray-400 uppercase tracking-wide">Cadastro</label>
+            <div className="flex items-center gap-1 mt-1">
+              <User size={14} className="text-gray-400" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">{createdDate}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
+          {!showPasswordForm ? (
+            <Button variant="secondary" onClick={() => setShowPasswordForm(true)} className="w-full">
+              <Key size={18} />
+              Alterar Senha
+            </Button>
+          ) : (
+            <form onSubmit={changePassword} className="space-y-3">
+              <div className="relative">
+                <Input label="Senha Atual" type={showCurrent ? 'text' : 'password'} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+                <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-[34px] text-gray-400">
+                  {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <div className="relative">
+                <Input label="Nova Senha" type={showNew ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Mínimo 4 caracteres" required />
+                <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-[34px] text-gray-400">
+                  {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <Input label="Confirmar" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+              <div className="flex gap-2">
+                <Button type="submit" className="flex-1" loading={passwordLoading}><Check size={18} />Salvar</Button>
+                <Button type="button" variant="ghost" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); setConfirmPassword('') }}>Cancelar</Button>
+              </div>
+            </form>
+          )}
+        </div>
 
         <Button variant="ghost" onClick={handleLogout} className="w-full text-red-600 dark:text-red-400">
           <LogOut size={18} />
