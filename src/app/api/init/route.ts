@@ -1,11 +1,32 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getUserByEmail, createUser, createClient, createService, createProfessional, generatePassword } from '@/lib/datastore'
+import { readData, writeData } from '@/lib/storage'
+import { kvSeedIfEmpty, isKvAvailable } from '@/lib/kv-store'
 import bcrypt from 'bcryptjs'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const force = searchParams.get('force') === 'true'
+
+  if (force) {
+    if (isKvAvailable()) {
+      await kvSeedIfEmpty()
+    }
+    await writeData('users.json', [])
+    await writeData('clients.json', [])
+    await writeData('services.json', [])
+    await writeData('professionals.json', [])
+    await writeData('appointments.json', [])
+    await writeData('transactions.json', [])
+    if (isKvAvailable()) {
+      const { kv } = await import('@vercel/kv')
+      await kv.set('initialized', false)
+    }
+  }
+
   try {
     const admin = await getUserByEmail('admin@reflexus.com')
-    if (admin) {
+    if (admin && !force) {
       return NextResponse.json({ message: 'Database already initialized' })
     }
 
