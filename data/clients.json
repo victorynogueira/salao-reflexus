@@ -43,5 +43,17 @@
     "active": true,
     "createdAt": "2026-06-16T20:02:39.067Z",
     "updatedAt": "2026-06-16T20:03:15.267Z"
+  },
+  {
+    "name": "vitoria",
+    "phone": "31993371752",
+    "notes": "",
+    "username": "vitoria5981",
+    "password": "$2a$12$Z31KkSuUy4.J2RY.g023/Ozo1gQM/MXcR2nDZTxvbu3Psj2S.kzK2",
+    "mustChangePassword": true,
+    "id": "mqhzs27ngpzrf2d7rao",
+    "active": true,
+    "createdAt": "2026-06-17T11:32:51.635Z",
+    "updatedAt": "2026-06-17T11:32:51.635Z"
   }
 ]

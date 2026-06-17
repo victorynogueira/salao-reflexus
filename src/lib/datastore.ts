@@ -1,9 +1,5 @@
-import { promises as fs } from 'fs'
-import path from 'path'
-
 import bcrypt from 'bcryptjs'
-
-const DATA_DIR = path.join(process.cwd(), 'data')
+import { readData, writeData } from './storage'
 
 export interface User {
   id: string
@@ -95,30 +91,12 @@ export interface Transaction {
   updatedAt: string
 }
 
-async function ensureDataDir() {
-  try { await fs.mkdir(DATA_DIR, { recursive: true }) } catch {}
-}
-
-async function readFile<T>(filename: string): Promise<T[]> {
-  await ensureDataDir()
-  const filepath = path.join(DATA_DIR, filename)
-  try {
-    const data = await fs.readFile(filepath, 'utf-8')
-    return JSON.parse(data)
-  } catch { return [] }
-}
-
-async function writeFile<T>(filename: string, data: T[]): Promise<void> {
-  await ensureDataDir()
-  await fs.writeFile(path.join(DATA_DIR, filename), JSON.stringify(data, null, 2))
-}
-
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
 // Users
-export async function getUsers(): Promise<User[]> { return readFile<User>('users.json') }
+export async function getUsers(): Promise<User[]> { return readData<User>('users.json') }
 export async function getUserByEmail(email: string): Promise<User | undefined> {
   const users = await getUsers()
   return users.find(u => u.email === email)
@@ -127,13 +105,13 @@ export async function createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedA
   const users = await getUsers()
   const newUser: User = { ...user, id: generateId(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
   users.push(newUser)
-  await writeFile('users.json', users)
+  await writeData('users.json', users)
   return newUser
 }
 
 // Clients
 export async function getClients(search = ''): Promise<Client[]> {
-  let clients = await readFile<Client>('clients.json')
+  let clients = await readData<Client>('clients.json')
   if (search) {
     const s = search.toLowerCase()
     clients = clients.filter(c =>
@@ -144,12 +122,12 @@ export async function getClients(search = ''): Promise<Client[]> {
 }
 
 export async function getClient(id: string): Promise<Client | undefined> {
-  const clients = await readFile<Client>('clients.json')
+  const clients = await readData<Client>('clients.json')
   return clients.find(c => c.id === id)
 }
 
 export async function getClientByUsername(username: string): Promise<Client | undefined> {
-  const clients = await readFile<Client>('clients.json')
+  const clients = await readData<Client>('clients.json')
   return clients.find(c => c.username.toLowerCase() === username.toLowerCase())
 }
 
@@ -165,7 +143,7 @@ export function generatePassword(): string {
 }
 
 export async function createClient(data: Omit<Client, 'id' | 'active' | 'createdAt' | 'updatedAt'>): Promise<Client> {
-  const clients = await readFile<Client>('clients.json')
+  const clients = await readData<Client>('clients.json')
 
   let username = data.username
   if (!username) {
@@ -196,30 +174,30 @@ export async function createClient(data: Omit<Client, 'id' | 'active' | 'created
     updatedAt: new Date().toISOString(),
   }
   clients.push(newClient)
-  await writeFile('clients.json', clients)
+  await writeData('clients.json', clients)
   // Return client with plain text password so admin can share it
   return { ...newClient, password: plainPassword }
 }
 
 export async function updateClient(id: string, data: Partial<Client>): Promise<Client | undefined> {
-  const clients = await readFile<Client>('clients.json')
+  const clients = await readData<Client>('clients.json')
   const index = clients.findIndex(c => c.id === id)
   if (index === -1) return undefined
   clients[index] = { ...clients[index], ...data, updatedAt: new Date().toISOString() }
-  await writeFile('clients.json', clients)
+  await writeData('clients.json', clients)
   return clients[index]
 }
 
 export async function deleteClient(id: string): Promise<boolean> {
-  let clients = await readFile<Client>('clients.json')
+  let clients = await readData<Client>('clients.json')
   clients = clients.filter(c => c.id !== id)
-  await writeFile('clients.json', clients)
+  await writeData('clients.json', clients)
   return true
 }
 
 // Services
 export async function getServices(search = '', category = ''): Promise<Service[]> {
-  let services = await readFile<Service>('services.json')
+  let services = await readData<Service>('services.json')
   if (search) {
     const s = search.toLowerCase()
     services = services.filter(svc => svc.name.toLowerCase().includes(s) || (svc.description?.toLowerCase().includes(s) ?? false))
@@ -229,37 +207,37 @@ export async function getServices(search = '', category = ''): Promise<Service[]
 }
 
 export async function getService(id: string): Promise<Service | undefined> {
-  const services = await readFile<Service>('services.json')
+  const services = await readData<Service>('services.json')
   return services.find(s => s.id === id)
 }
 
 export async function createService(data: Omit<Service, 'id' | 'active' | 'createdAt' | 'updatedAt'>): Promise<Service> {
-  const services = await readFile<Service>('services.json')
+  const services = await readData<Service>('services.json')
   const newService: Service = { ...data, id: generateId(), active: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
   services.push(newService)
-  await writeFile('services.json', services)
+  await writeData('services.json', services)
   return newService
 }
 
 export async function updateService(id: string, data: Partial<Service>): Promise<Service | undefined> {
-  const services = await readFile<Service>('services.json')
+  const services = await readData<Service>('services.json')
   const index = services.findIndex(s => s.id === id)
   if (index === -1) return undefined
   services[index] = { ...services[index], ...data, updatedAt: new Date().toISOString() }
-  await writeFile('services.json', services)
+  await writeData('services.json', services)
   return services[index]
 }
 
 export async function deleteService(id: string): Promise<boolean> {
-  let services = await readFile<Service>('services.json')
+  let services = await readData<Service>('services.json')
   services = services.filter(s => s.id !== id)
-  await writeFile('services.json', services)
+  await writeData('services.json', services)
   return true
 }
 
 // Professionals
 export async function getProfessionals(): Promise<Professional[]> {
-  const profs = await readFile<Professional>('professionals.json')
+  const profs = await readData<Professional>('professionals.json')
   return profs.filter(p => p.active).sort((a, b) => a.name.localeCompare(b.name))
 }
 
@@ -269,19 +247,19 @@ export async function getRosa(): Promise<Professional | undefined> {
 }
 
 export async function createProfessional(data: Omit<Professional, 'id' | 'active' | 'createdAt' | 'updatedAt'>): Promise<Professional> {
-  const profs = await readFile<Professional>('professionals.json')
+  const profs = await readData<Professional>('professionals.json')
   const newProf: Professional = { ...data, id: generateId(), active: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
   profs.push(newProf)
-  await writeFile('professionals.json', profs)
+  await writeData('professionals.json', profs)
   return newProf
 }
 
 // Appointments
 async function enrichAppointment(appt: any): Promise<Appointment> {
   const [clients, professionals, services] = await Promise.all([
-    readFile<Client>('clients.json'),
-    readFile<Professional>('professionals.json'),
-    readFile<Service>('services.json'),
+    readData<Client>('clients.json'),
+    readData<Professional>('professionals.json'),
+    readData<Service>('services.json'),
   ])
 
   const client = clients.find(c => c.id === appt.clientId) || appt.client
@@ -307,7 +285,7 @@ async function enrichAppointment(appt: any): Promise<Appointment> {
 }
 
 export async function getAppointments(date?: string, professionalId?: string, status?: string, clientId?: string): Promise<Appointment[]> {
-  let appointments = await readFile<Appointment>('appointments.json')
+  let appointments = await readData<Appointment>('appointments.json')
 
   if (date) {
     const targetDate = new Date(date).toDateString()
@@ -327,12 +305,12 @@ export async function getAppointments(date?: string, professionalId?: string, st
 }
 
 export async function getAppointment(id: string): Promise<Appointment | undefined> {
-  const appointments = await readFile<Appointment>('appointments.json')
+  const appointments = await readData<Appointment>('appointments.json')
   return appointments.find(a => a.id === id)
 }
 
 export async function createAppointment(data: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> {
-  const appointments = await readFile<Appointment>('appointments.json')
+  const appointments = await readData<Appointment>('appointments.json')
 
   const conflict = appointments.find(a =>
     a.professionalId === data.professionalId &&
@@ -346,16 +324,16 @@ export async function createAppointment(data: Omit<Appointment, 'id' | 'createdA
 
   const newAppointment: Appointment = { ...data, id: generateId(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
   appointments.push(newAppointment)
-  await writeFile('appointments.json', appointments)
+  await writeData('appointments.json', appointments)
   return newAppointment
 }
 
 export async function updateAppointment(id: string, data: Partial<Appointment>): Promise<Appointment | undefined> {
-  const appointments = await readFile<Appointment>('appointments.json')
+  const appointments = await readData<Appointment>('appointments.json')
   const index = appointments.findIndex(a => a.id === id)
   if (index === -1) return undefined
   appointments[index] = { ...appointments[index], ...data, updatedAt: new Date().toISOString() }
-  await writeFile('appointments.json', appointments)
+  await writeData('appointments.json', appointments)
   return appointments[index]
 }
 
@@ -365,7 +343,7 @@ export async function cancelAppointment(id: string): Promise<boolean> {
 
 // Transactions
 export async function getTransactions(startDate?: string, endDate?: string, type?: string): Promise<Transaction[]> {
-  let transactions = await readFile<Transaction>('transactions.json')
+  let transactions = await readData<Transaction>('transactions.json')
   if (startDate && endDate) {
     const start = new Date(startDate).getTime()
     const end = new Date(endDate).getTime()
@@ -376,9 +354,9 @@ export async function getTransactions(startDate?: string, endDate?: string, type
 }
 
 export async function createTransaction(data: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<Transaction> {
-  const transactions = await readFile<Transaction>('transactions.json')
+  const transactions = await readData<Transaction>('transactions.json')
   const newTransaction: Transaction = { ...data, id: generateId(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
   transactions.push(newTransaction)
-  await writeFile('transactions.json', transactions)
+  await writeData('transactions.json', transactions)
   return newTransaction
 }
