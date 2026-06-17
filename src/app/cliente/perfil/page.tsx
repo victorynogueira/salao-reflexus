@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import ClientPortalLayout from '@/components/layout/ClientPortalLayout'
+import ClientLayout from '@/components/layout/ClientLayout'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
@@ -35,17 +35,18 @@ export default function ProfilePage() {
   const router = useRouter()
 
   useEffect(() => {
-    const token = localStorage.getItem('client-token')
-    const user = localStorage.getItem('client-user')
-    if (!token || !user) {
-      router.push('/cliente')
-      return
-    }
-    const u = JSON.parse(user)
+    const userStr = localStorage.getItem('client-user')
+    if (!userStr) return
+    const u = JSON.parse(userStr)
     setClient(u)
     setNameValue(u.name)
     setPhoneValue(u.phone)
     setLoading(false)
+    
+    // Auto-open password form if required
+    if (u.mustChangePassword) {
+      setShowPasswordForm(true)
+    }
   }, [])
 
   const showMsg = (msg: string, type: 'success' | 'error' = 'success') => {
@@ -127,6 +128,8 @@ export default function ProfilePage() {
         setCurrentPassword('')
         setNewPassword('')
         setConfirmPassword('')
+        // Refresh to trigger layout guard removal
+        window.location.reload()
       }
     } catch { showMsg('Erro ao conectar', 'error') }
     finally { setPasswordLoading(false) }
@@ -139,16 +142,23 @@ export default function ProfilePage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-      <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-    </div>
+    <ClientLayout>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+      </div>
+    </ClientLayout>
   )
 
   const createdDate = client?.createdAt ? format(new Date(client.createdAt), "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : '-'
 
   return (
-    <ClientPortalLayout activeTab="perfil">
-      <div className="space-y-4">
+    <ClientLayout>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Meu Perfil</h1>
+          <p className="text-gray-500 dark:text-gray-400">Gerencie seus dados e configurações</p>
+        </div>
+
         {(success || error) && (
           <div className={`p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${
             success ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200'
@@ -164,9 +174,11 @@ export default function ProfilePage() {
               {client?.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{client?.name}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{client?.name}</h2>
+                {client?.mustChangePassword && <Badge variant="warning">Trocar Senha</Badge>}
+              </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">@{client?.username}</p>
-              {client?.mustChangePassword && <Badge variant="warning" className="mt-1">Trocar senha</Badge>}
             </div>
           </div>
         </div>
@@ -229,6 +241,12 @@ export default function ProfilePage() {
             </Button>
           ) : (
             <form onSubmit={changePassword} className="space-y-3">
+              {client?.mustChangePassword && (
+                <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 text-sm">
+                  <p className="font-medium">Primeiro Acesso</p>
+                  <p className="text-xs mt-1">Por segurança, altere sua senha temporária antes de agendar.</p>
+                </div>
+              )}
               <div className="relative">
                 <Input label="Senha Atual" type={showCurrent ? 'text' : 'password'} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
                 <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-[34px] text-gray-400">
@@ -244,7 +262,9 @@ export default function ProfilePage() {
               <Input label="Confirmar" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
               <div className="flex gap-2">
                 <Button type="submit" className="flex-1" loading={passwordLoading}><Check size={18} />Salvar</Button>
-                <Button type="button" variant="ghost" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); setConfirmPassword('') }}>Cancelar</Button>
+                {!client?.mustChangePassword && (
+                  <Button type="button" variant="ghost" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); setConfirmPassword('') }}>Cancelar</Button>
+                )}
               </div>
             </form>
           )}
@@ -259,6 +279,6 @@ export default function ProfilePage() {
           Salão Reflexus © {new Date().getFullYear()}
         </p>
       </div>
-    </ClientPortalLayout>
+    </ClientLayout>
   )
 }

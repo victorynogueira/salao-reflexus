@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import ClientPortalLayout from '@/components/layout/ClientPortalLayout'
+import ClientLayout from '@/components/layout/ClientLayout'
 import Card, { CardContent } from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
@@ -27,7 +27,6 @@ interface Appointment {
 }
 
 export default function ClientBookPage() {
-  const [client, setClient] = useState<any>(null)
   const [services, setServices] = useState<Service[]>([])
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
@@ -41,18 +40,13 @@ export default function ClientBookPage() {
   const [dateOffset, setDateOffset] = useState(0)
 
   useEffect(() => {
-    const token = localStorage.getItem('client-token')
-    const user = localStorage.getItem('client-user')
-    if (!token || !user) return
-    setClient(JSON.parse(user))
-
     Promise.all([
       fetch('/api/services').then(r => r.json()),
       fetch('/api/appointments').then(r => r.json()),
       fetch('/api/professionals').then(r => r.json()),
     ]).then(([s, a, p]) => {
       setServices(Array.isArray(s) ? s : [])
-      setAppointments(Array.isArray(a) ? a : [])
+      setAppointments(Array.isArray(a) ? a.filter((x: any) => x.status !== 'CANCELLED') : [])
       if (Array.isArray(p) && p.length > 0 && p[0].whatsapp) {
         setRosaPhone(p[0].whatsapp.replace(/\D/g, ''))
       }
@@ -89,11 +83,12 @@ export default function ClientBookPage() {
   const availableSlots = timeSlots.filter(slot => isSlotAvailable(slot))
 
   const handleBook = async () => {
-    if (!selectedTime || selectedServices.length === 0 || !client) return
+    if (!selectedTime || selectedServices.length === 0) return
 
     setSubmitting(true)
     setBooked(false)
 
+    const user = JSON.parse(localStorage.getItem('client-user') || '{}')
     const dateStr = format(selectedDate, 'yyyy-MM-dd')
     const dateDisplay = format(selectedDate, "dd/MM/yyyy")
     const serviceNames = selectedServices.map(s => s.name).join(', ')
@@ -103,7 +98,7 @@ export default function ClientBookPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          clientId: client.id,
+          clientId: user.id,
           date: dateStr,
           startTime: selectedTime,
           services: selectedServices.map(s => ({
@@ -126,7 +121,7 @@ export default function ClientBookPage() {
         return
       }
 
-      const message = `Olá, Rosa! Sou ${client.name} e gostaria de agendar:\n\n📋 *Serviço:* ${serviceNames}\n📅 *Data:* ${dateDisplay}\n🕐 *Horário:* ${selectedTime}\n⏱ *Duração:* ${totalDuration} minutos\n💰 *Valor:* ${formatCurrency(totalPrice)}\n\nEsse horário está disponível?`
+      const message = `Olá, Rosa! Sou ${user.name} e gostaria de agendar:\n\n📋 *Serviço:* ${serviceNames}\n📅 *Data:* ${dateDisplay}\n🕐 *Horário:* ${selectedTime}\n⏱ *Duração:* ${totalDuration} minutos\n💰 *Valor:* ${formatCurrency(totalPrice)}\n\nEsse horário está disponível?`
 
       const encoded = encodeURIComponent(message)
       window.open(`https://wa.me/${rosaPhone}?text=${encoded}`, '_blank')
@@ -143,15 +138,22 @@ export default function ClientBookPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-      </div>
+      <ClientLayout>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+          <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+        </div>
+      </ClientLayout>
     )
   }
 
   return (
-    <ClientPortalLayout activeTab="agendar">
-      <div className="space-y-4">
+    <ClientLayout>
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Agendar Horário</h1>
+          <p className="text-gray-500 dark:text-gray-400">Selecione os serviços e escolha o melhor horário</p>
+        </div>
+
         <Card>
           <CardContent className="p-4">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
@@ -330,6 +332,6 @@ export default function ClientBookPage() {
           </Card>
         )}
       </div>
-    </ClientPortalLayout>
+    </ClientLayout>
   )
 }

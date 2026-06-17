@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import ClientPortalLayout from '@/components/layout/ClientPortalLayout'
+import ClientLayout from '@/components/layout/ClientLayout'
 import Card, { CardContent } from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
 import { Calendar, Clock, Scissors, DollarSign, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react'
@@ -27,15 +27,13 @@ export default function ClientHistoryPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   useEffect(() => {
-    const token = localStorage.getItem('client-token')
-    const user = localStorage.getItem('client-user')
-    if (!token || !user) return
-    const u = JSON.parse(user)
+    const user = JSON.parse(localStorage.getItem('client-user') || '{}')
+    if (!user.id) return
 
     fetch('/api/appointments')
       .then(res => res.json())
       .then(data => {
-        const clientAppts = Array.isArray(data) ? data.filter((a: any) => a.clientId === u.id) : []
+        const clientAppts = Array.isArray(data) ? data.filter((a: any) => a.clientId === user.id && a.status !== 'CANCELLED') : []
         setAppointments(clientAppts)
         setLoading(false)
       })
@@ -148,15 +146,22 @@ export default function ClientHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-      </div>
+      <ClientLayout>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+          <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+        </div>
+      </ClientLayout>
     )
   }
 
   return (
-    <ClientPortalLayout activeTab="agendamentos">
-      <div className="space-y-6">
+    <ClientLayout>
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Meus Agendamentos</h1>
+          <p className="text-gray-500 dark:text-gray-400">Acompanhe o status dos seus agendamentos</p>
+        </div>
+
         {pending.length > 0 && (
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -198,6 +203,6 @@ export default function ClientHistoryPage() {
           </Card>
         )}
       </div>
-    </ClientPortalLayout>
+    </ClientLayout>
   )
 }
