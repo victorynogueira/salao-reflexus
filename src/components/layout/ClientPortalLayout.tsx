@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Home, Clock, User, Scissors } from 'lucide-react'
+import { Calendar, Clock, User, Scissors, Store } from 'lucide-react'
 
 interface ClientPortalLayoutProps {
   children: React.ReactNode
@@ -11,6 +11,7 @@ interface ClientPortalLayoutProps {
 
 export default function ClientPortalLayout({ children, activeTab }: ClientPortalLayoutProps) {
   const [client, setClient] = useState<any>(null)
+  const [salonInfo, setSalonInfo] = useState<{ name: string; address: string; phone: string } | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -21,6 +22,11 @@ export default function ClientPortalLayout({ children, activeTab }: ClientPortal
       return
     }
     setClient(JSON.parse(user))
+
+    fetch('/api/config/salon')
+      .then(r => r.json())
+      .then(data => setSalonInfo(data))
+      .catch(() => {})
   }, [])
 
   if (!client) {
@@ -58,13 +64,40 @@ export default function ClientPortalLayout({ children, activeTab }: ClientPortal
               <Scissors size={20} className="text-primary-600" />
             </div>
             <div>
-              <p className="font-semibold text-gray-900 dark:text-gray-100">Salão Reflexus</p>
+              <p className="font-semibold text-gray-900 dark:text-gray-100">{salonInfo?.name || 'Salão Reflexus'}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Seg-Sáb · 8h às 20h</p>
             </div>
           </div>
         </div>
 
         {children}
+
+        <div className="mt-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+              <Store size={16} className="text-primary-600" />
+              Sobre o Salão
+            </h3>
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <p className="flex items-start gap-2">
+                <span className="font-medium text-gray-900 dark:text-gray-100 min-w-16">Nome:</span>
+                <span>{salonInfo?.name || 'Salão Reflexus'}</span>
+              </p>
+              {salonInfo?.address && (
+                <p className="flex items-start gap-2">
+                  <span className="font-medium text-gray-900 dark:text-gray-100 min-w-16">Endereço:</span>
+                  <span>{salonInfo.address}</span>
+                </p>
+              )}
+              {salonInfo?.phone && (
+                <p className="flex items-start gap-2">
+                  <span className="font-medium text-gray-900 dark:text-gray-100 min-w-16">Telefone:</span>
+                  <span>{salonInfo.phone}</span>
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 z-50">

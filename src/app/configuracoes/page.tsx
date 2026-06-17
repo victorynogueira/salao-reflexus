@@ -7,54 +7,42 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { useTheme } from '@/context/ThemeContext'
-import { Sun, Moon, Bell, Shield, User, Store, Plus, MessageCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import { Sun, Moon, Bell, Shield, User, Store, Plus, Save, Loader2 } from 'lucide-react'
 
 export default function ConfiguracoesPage() {
   const { darkMode, toggleDarkMode } = useTheme()
   const [notifications, setNotifications] = useState(true)
-  const [salonName, setSalonName] = useState('Salão Reflexus')
-  const [workingHours, setWorkingHours] = useState({ start: '08:00', end: '20:00' })
   const [slotInterval, setSlotInterval] = useState('30')
 
-  const [whatsappPhoneId, setWhatsappPhoneId] = useState('')
-  const [whatsappToken, setWhatsappToken] = useState('')
-  const [whatsappTestPhone, setWhatsappTestPhone] = useState('')
-  const [whatsappTesting, setWhatsappTesting] = useState(false)
-  const [whatsappTestResult, setWhatsappTestResult] = useState<{ success: boolean; message: string } | null>(null)
-  const [whatsappConfigured, setWhatsappConfigured] = useState(false)
+  const [salonData, setSalonData] = useState({ name: '', address: '', phone: '' })
+  const [salonSaving, setSalonSaving] = useState(false)
+  const [salonSaved, setSalonSaved] = useState(false)
+
+  const [workingHours, setWorkingHours] = useState({ start: '08:00', end: '20:00' })
 
   useEffect(() => {
-    fetch('/api/config/whatsapp')
+    fetch('/api/config/salon')
       .then(r => r.json())
       .then(data => {
-        setWhatsappConfigured(data.configured || false)
+        setSalonData({ name: data.name || '', address: data.address || '', phone: data.phone || '' })
       })
-      .catch(() => setWhatsappConfigured(false))
+      .catch(() => {})
   }, [])
 
-  const testWhatsApp = async () => {
-    setWhatsappTesting(true)
-    setWhatsappTestResult(null)
+  const saveSalonConfig = async () => {
+    setSalonSaving(true)
     try {
-      const res = await fetch('/api/whatsapp/send', {
+      await fetch('/api/config/salon', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: whatsappTestPhone,
-          message: 'Teste do Salão Reflexus ✅\n\nWhatsApp configurado com sucesso!',
-        }),
+        body: JSON.stringify(salonData),
       })
-      const data = await res.json()
-      if (data.success) {
-        setWhatsappTestResult({ success: true, message: 'Mensagem enviada com sucesso!' })
-        setWhatsappConfigured(true)
-      } else {
-        setWhatsappTestResult({ success: false, message: data.error || 'Erro ao enviar' })
-      }
-    } catch {
-      setWhatsappTestResult({ success: false, message: 'Erro ao conectar' })
+      setSalonSaved(true)
+      setTimeout(() => setSalonSaved(false), 3000)
+    } catch (error) {
+      console.error(error)
     } finally {
-      setWhatsappTesting(false)
+      setSalonSaving(false)
     }
   }
 
@@ -74,37 +62,35 @@ export default function ConfiguracoesPage() {
             </h3>
           </CardHeader>
           <CardContent className="space-y-4">
+            {salonSaved && (
+              <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm">
+                Dados salvos com sucesso!
+              </div>
+            )}
             <Input
               label="Nome do Salão"
-              value={salonName}
-              onChange={(e) => setSalonName(e.target.value)}
+              value={salonData.name}
+              onChange={(e) => setSalonData({ ...salonData, name: e.target.value })}
+              placeholder="Ex: Salão Reflexus"
             />
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="Horário de Abertura"
-                type="time"
-                value={workingHours.start}
-                onChange={(e) => setWorkingHours({ ...workingHours, start: e.target.value })}
-              />
-              <Input
-                label="Horário de Fechamento"
-                type="time"
-                value={workingHours.end}
-                onChange={(e) => setWorkingHours({ ...workingHours, end: e.target.value })}
-              />
+            <Input
+              label="Endereço"
+              value={salonData.address}
+              onChange={(e) => setSalonData({ ...salonData, address: e.target.value })}
+              placeholder="Rua, Número, Bairro"
+            />
+            <Input
+              label="Telefone"
+              value={salonData.phone}
+              onChange={(e) => setSalonData({ ...salonData, phone: e.target.value })}
+              placeholder="(00) 00000-0000"
+            />
+            <div className="flex items-center justify-between pt-2">
+              <Button onClick={saveSalonConfig} loading={salonSaving}>
+                <Save size={18} />
+                Salvar Dados do Salão
+              </Button>
             </div>
-            <Select
-              label="Intervalo entre Horários"
-              value={slotInterval}
-              onChange={(e) => setSlotInterval(e.target.value)}
-              options={[
-                { value: '15', label: '15 minutos' },
-                { value: '30', label: '30 minutos' },
-                { value: '45', label: '45 minutos' },
-                { value: '60', label: '1 hora' },
-              ]}
-            />
-            <Button>Salvar Alterações</Button>
           </CardContent>
         </Card>
 
@@ -163,80 +149,6 @@ export default function ConfiguracoesPage() {
                 />
               </button>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <MessageCircle size={20} />
-              WhatsApp Cloud API
-            </h3>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {whatsappConfigured && (
-              <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 flex items-center gap-2">
-                <CheckCircle size={16} className="text-green-600" />
-                <p className="text-sm text-green-700 dark:text-green-400">WhatsApp configurado e funcionando!</p>
-              </div>
-            )}
-
-            <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-              <p className="text-sm text-blue-700 dark:text-blue-400 mb-2">Configure aqui sua integração com a Meta WhatsApp Cloud API:</p>
-              <ol className="text-xs text-blue-600 dark:text-blue-500 list-decimal list-inside space-y-1">
-                <li>Crie um app em <a href="https://developers.facebook.com" target="_blank" className="underline">developers.facebook.com</a></li>
-                <li>Adicione o produto WhatsApp</li>
-                <li>Copie o Phone Number ID e o Access Token</li>
-                <li>Cole abaixo e teste</li>
-              </ol>
-            </div>
-
-            <Input
-              label="Phone Number ID"
-              value={whatsappPhoneId}
-              onChange={(e) => setWhatsappPhoneId(e.target.value)}
-              placeholder="Ex: 123456789012345"
-            />
-            <Input
-              label="Access Token (Permanent)"
-              type="password"
-              value={whatsappToken}
-              onChange={(e) => setWhatsappToken(e.target.value)}
-              placeholder="EAA..."
-            />
-            <Input
-              label="Número para Teste (com DDD)"
-              value={whatsappTestPhone}
-              onChange={(e) => setWhatsappTestPhone(e.target.value)}
-              placeholder="5511999999999"
-            />
-            <Button onClick={testWhatsApp} loading={whatsappTesting}>
-              <MessageCircle size={18} />
-              Testar Envio
-            </Button>
-
-            {whatsappTestResult && (
-              <div className={`p-3 rounded-lg border flex items-center gap-2 ${
-                whatsappTestResult.success
-                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                  : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-              }`}>
-                {whatsappTestResult.success ? (
-                  <CheckCircle size={16} className="text-green-600" />
-                ) : (
-                  <XCircle size={16} className="text-red-600" />
-                )}
-                <p className={`text-sm ${
-                  whatsappTestResult.success ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'
-                }`}>
-                  {whatsappTestResult.message}
-                </p>
-              </div>
-            )}
-
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              💡 Após configurar, adicione as variáveis no Vercel: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">WHATSAPP_PHONE_NUMBER_ID</code> e <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">WHATSAPP_ACCESS_TOKEN</code>
-            </p>
           </CardContent>
         </Card>
 

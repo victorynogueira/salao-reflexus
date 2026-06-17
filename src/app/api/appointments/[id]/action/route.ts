@@ -18,6 +18,10 @@ export async function POST(
       await updateAppointment(params.id, { status: 'SCHEDULED' })
     } else if (action === 'reject') {
       await updateAppointment(params.id, { status: 'CANCELLED' })
+    } else if (action === 'complete') {
+      await updateAppointment(params.id, { status: 'COMPLETED' })
+    } else if (action === 'cancel') {
+      await updateAppointment(params.id, { status: 'CANCELLED' })
     } else {
       return NextResponse.json({ error: 'Ação inválida' }, { status: 400 })
     }

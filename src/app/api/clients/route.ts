@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { getClients, createClient, getClientByUsername } from '@/lib/datastore'
-import { sendWhatsAppMessage, generateCredentialsMessage, isWhatsAppConfigured } from '@/lib/whatsapp'
 import bcrypt from 'bcryptjs'
 
 export async function GET(request: Request) {
@@ -8,7 +7,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
     const clients = await getClients(search)
-    // Don't expose passwords
     const safeClients = clients.map(c => ({
       id: c.id,
       name: c.name,
@@ -43,26 +41,14 @@ export async function POST(request: Request) {
 
     const client = await createClient({ name, phone, notes })
 
-    const response = {
+    return NextResponse.json({
       id: client.id,
       name: client.name,
       phone: client.phone,
       username: client.username,
       password: client.password,
       mustChangePassword: client.mustChangePassword,
-    }
-
-    // Enviar credenciais via WhatsApp automaticamente
-    if (isWhatsAppConfigured()) {
-      const message = generateCredentialsMessage(client.name, client.username, client.password)
-      const whatsappResult = await sendWhatsAppMessage(client.phone, message)
-      if (whatsappResult.success) {
-        response.mustChangePassword = true
-      }
-      // Se falhar, não interrompe o fluxo - credenciais já estão na resposta
-    }
-
-    return NextResponse.json(response, { status: 201 })
+    }, { status: 201 })
   } catch (error: any) {
     console.error('Erro ao criar cliente:', error)
     return NextResponse.json({ error: error.message || 'Erro interno do servidor' }, { status: 500 })

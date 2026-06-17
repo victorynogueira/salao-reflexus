@@ -31,7 +31,6 @@ export default function ClientsPage() {
   const [showNewModal, setShowNewModal] = useState(false)
   const [createdClient, setCreatedClient] = useState<any>(null)
   const [formData, setFormData] = useState({ name: '', phone: '', notes: '' })
-  const [sendViaWhatsApp, setSendViaWhatsApp] = useState(false)
   const [toast, setToast] = useState('')
 
   const fetchClients = async (searchTerm = '') => {
@@ -72,13 +71,6 @@ export default function ClientsPage() {
         setCreatedClient(data)
         setFormData({ name: '', phone: '', notes: '' })
         fetchClients(search)
-
-        if (sendViaWhatsApp && data.phone) {
-          const phone = data.phone.replace(/\D/g, '')
-          const message = `Olá, ${data.name}! 🌸\n\nSeu cadastro no Salão Reflexus foi realizado com sucesso!\n\n🔐 *Seus dados de acesso:*\n👤 Usuário: *${data.username}*\n🔑 Senha: *${data.password}*\n\nAcesse: https://salao-reflexus.vercel.app/cliente\n\n⚠️ No primeiro acesso, você deverá trocar a senha.\n\nQualquer dúvida, estamos à disposição! 💕`
-          window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(message)}`, '_blank')
-          setSendViaWhatsApp(false)
-        }
       }
     } catch (error) {
       console.error('Erro ao criar cliente:', error)
@@ -214,7 +206,7 @@ export default function ClientsPage() {
         )}
       </div>
 
-      <Modal isOpen={showNewModal} onClose={() => { setShowNewModal(false); setCreatedClient(null); setSendViaWhatsApp(false) }} title="Novo Cliente">
+      <Modal isOpen={showNewModal} onClose={() => { setShowNewModal(false); setCreatedClient(null) }} title="Novo Cliente">
         {createdClient ? (
           <div className="p-6 space-y-4">
             <div className="p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
@@ -226,7 +218,7 @@ export default function ClientsPage() {
                     <p className="text-xs text-gray-500">Usuario</p>
                     <p className="font-mono font-bold text-lg text-gray-900 dark:text-gray-100">@{createdClient.username}</p>
                   </div>
-                  <button onClick={() => navigator.clipboard.writeText(createdClient.username)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <button onClick={() => { navigator.clipboard.writeText(createdClient.username); setToast('Copiado!') }} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                     <Copy size={16} className="text-gray-400" />
                   </button>
                 </div>
@@ -236,7 +228,7 @@ export default function ClientsPage() {
                       <p className="text-xs text-yellow-600 dark:text-yellow-500">Senha temporária</p>
                       <p className="font-mono font-bold text-lg text-yellow-700 dark:text-yellow-400">{createdClient.password}</p>
                     </div>
-                    <button onClick={() => navigator.clipboard.writeText(createdClient.password)} className="p-2 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30">
+                    <button onClick={() => { navigator.clipboard.writeText(createdClient.password); setToast('Copiado!') }} className="p-2 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30">
                       <Copy size={16} className="text-yellow-500" />
                     </button>
                   </div>
@@ -245,29 +237,17 @@ export default function ClientsPage() {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button
-                className="flex-1"
-                onClick={() => {
-                  const phone = createdClient.phone.replace(/\D/g, '')
-                  const message = `Olá, ${createdClient.name}! 🌸\n\nSeu cadastro no Salão Reflexus foi realizado com sucesso!\n\n🔐 *Seus dados de acesso:*\n👤 Usuário: *${createdClient.username}*\n🔑 Senha: *${createdClient.password}*\n\nAcesse: https://salao-reflexus.vercel.app/cliente\n\n⚠️ No primeiro acesso, você deverá trocar a senha.\n\nQualquer dúvida, estamos à disposição! 💕`
-                  window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(message)}`, '_blank')
-                }}
-              >
-                <MessageCircle size={18} />
-                Enviar via WhatsApp
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  navigator.clipboard.writeText(createdClient.username)
-                  navigator.clipboard.writeText(createdClient.password)
-                  alert('Credenciais copiadas!')
-                }}
-              >
-                <Copy size={18} />
-              </Button>
-            </div>
+            <button
+              onClick={() => {
+                const phone = createdClient.phone.replace(/\D/g, '')
+                const message = `Olá, ${createdClient.name}! 🌸\n\nSeu cadastro no Salão Reflexus foi realizado com sucesso!\n\n🔐 *Seus dados de acesso:*\n👤 Usuário: *${createdClient.username}*\n🔑 Senha: *${createdClient.password}*\n\nAcesse: https://salao-reflexus.vercel.app/cliente\n\n⚠️ No primeiro acesso, você deverá trocar a senha.\n\nQualquer dúvida, estamos à disposição! 💕`
+                window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(message)}`, '_blank')
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors"
+            >
+              <MessageCircle size={18} />
+              Enviar via WhatsApp
+            </button>
 
             <div className="flex gap-3">
               <Button variant="secondary" className="flex-1" onClick={() => { setShowNewModal(false); setCreatedClient(null) }}>
@@ -301,25 +281,13 @@ export default function ClientsPage() {
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-              <input
-                type="checkbox"
-                checked={sendViaWhatsApp}
-                onChange={(e) => setSendViaWhatsApp(e.target.checked)}
-                className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-              />
-              <div>
-                <p className="font-medium text-sm text-gray-900 dark:text-gray-100">Enviar dados de login via WhatsApp</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Enviará automaticamente após cadastrar</p>
-              </div>
-            </label>
             <div className="flex gap-3 justify-end">
               <Button type="button" variant="secondary" onClick={() => setShowNewModal(false)}>
                 Cancelar
               </Button>
               <Button type="submit">
                 <Send size={18} />
-                Cadastrar{sendViaWhatsApp && ' e Enviar'}
+                Cadastrar
               </Button>
             </div>
           </form>

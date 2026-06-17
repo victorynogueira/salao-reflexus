@@ -65,7 +65,7 @@ export default function AgendaPage() {
       if (selectedProfessional) params.set('professionalId', selectedProfessional)
       const res = await fetch(`/api/appointments?${params}`)
       const data = await res.json()
-      setAppointments(Array.isArray(data) ? data : [])
+      setAppointments(Array.isArray(data) ? data.filter((a: any) => a.status !== 'CANCELLED') : [])
     } catch (error) {
       console.error('Erro ao buscar agendamentos:', error)
       setAppointments([])
@@ -114,7 +114,11 @@ export default function AgendaPage() {
   const handleCancel = async () => {
     if (!selectedAppointment) return
     try {
-      await fetch(`/api/appointments/${selectedAppointment.id}`, { method: 'DELETE' })
+      await fetch(`/api/appointments/${selectedAppointment.id}/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'cancel' }),
+      })
       setShowCancelModal(false)
       setSelectedAppointment(null)
       fetchAppointments()
@@ -464,9 +468,27 @@ export default function AgendaPage() {
                   </Button>
                 </>
               )}
-              {selectedAppointment.status !== 'CANCELLED' && selectedAppointment.status !== 'PENDING' && (
-                <Button variant="danger" onClick={() => setShowCancelModal(true)}>
-                  <Trash2 size={18} />
+              {(selectedAppointment.status === 'SCHEDULED' || selectedAppointment.status === 'CONFIRMED') && (
+                <Button
+                  className="flex-1"
+                  onClick={async () => {
+                    await fetch(`/api/appointments/${selectedAppointment.id}/action`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'complete' }),
+                    })
+                    setShowDetailsModal(false)
+                    setSelectedAppointment(null)
+                    fetchAppointments()
+                  }}
+                >
+                  <Check size={18} />
+                  Concluir
+                </Button>
+              )}
+              {selectedAppointment.status !== 'CANCELLED' && selectedAppointment.status !== 'PENDING' && selectedAppointment.status !== 'COMPLETED' && (
+                <Button variant="ghost" onClick={() => setShowCancelModal(true)}>
+                  <Trash2 size={18} className="text-red-500" />
                   Cancelar
                 </Button>
               )}
