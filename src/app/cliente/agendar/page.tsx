@@ -277,30 +277,32 @@ Esse horário está disponível?`
             <CardContent className="p-4">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                 <Clock size={18} className="text-primary-600" />
-                Escolha o Horário
+                Horários Disponíveis
               </h3>
-              <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto scrollbar-thin">
-                {timeSlots.map((slot) => {
-                  const available = isSlotAvailable(slot)
-                  const isSelected = selectedTime === slot
-                  return (
-                    <button
-                      key={slot}
-                      disabled={!available}
-                      onClick={() => setSelectedTime(slot)}
-                      className={`py-2 rounded-lg text-sm font-medium transition-colors ${
-                        !available
-                          ? 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed line-through'
-                          : isSelected
-                          ? 'bg-primary-600 text-white'
-                          : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-primary-300 dark:hover:border-primary-700'
-                      }`}
-                    >
-                      {slot}
-                    </button>
-                  )
-                })}
-              </div>
+              {timeSlots.filter(slot => isSlotAvailable(slot)).length === 0 ? (
+                <p className="text-center text-sm text-gray-500 dark:text-gray-400 py-4">
+                  Nenhum horário disponível para {totalDuration} min neste dia
+                </p>
+              ) : (
+                <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto scrollbar-thin">
+                  {timeSlots.filter(slot => isSlotAvailable(slot)).map((slot) => {
+                    const isSelected = selectedTime === slot
+                    return (
+                      <button
+                        key={slot}
+                        onClick={() => setSelectedTime(slot)}
+                        className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                          isSelected
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-primary-300 dark:hover:border-primary-700'
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

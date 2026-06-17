@@ -7,7 +7,7 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
 import Modal from '@/components/ui/Modal'
-import { Users, Plus, Search, Phone, Trash2, Eye, Copy, Key } from 'lucide-react'
+import { Users, Plus, Search, Phone, Trash2, Eye, Copy, Key, MessageCircle, Send, User, Clock, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { formatPhone, formatDate } from '@/utils/format'
 
@@ -18,7 +18,9 @@ interface Client {
   username: string
   notes: string | null
   active: boolean
+  mustChangePassword?: boolean
   createdAt: string
+  updatedAt?: string
   _count?: { appointments: number }
 }
 
@@ -29,6 +31,8 @@ export default function ClientsPage() {
   const [showNewModal, setShowNewModal] = useState(false)
   const [createdClient, setCreatedClient] = useState<any>(null)
   const [formData, setFormData] = useState({ name: '', phone: '', notes: '' })
+  const [sendViaWhatsApp, setSendViaWhatsApp] = useState(false)
+  const [toast, setToast] = useState('')
 
   const fetchClients = async (searchTerm = '') => {
     setLoading(true)
@@ -68,6 +72,13 @@ export default function ClientsPage() {
         setCreatedClient(data)
         setFormData({ name: '', phone: '', notes: '' })
         fetchClients(search)
+
+        if (sendViaWhatsApp && data.phone) {
+          const phone = data.phone.replace(/\D/g, '')
+          const message = `Olá, ${data.name}! 🌸\n\nSeu cadastro no Salão Reflexus foi realizado com sucesso!\n\n🔐 *Seus dados de acesso:*\n👤 Usuário: *${data.username}*\n🔑 Senha: *${data.password}*\n\nAcesse: https://salao-reflexus.vercel.app/cliente\n\n⚠️ No primeiro acesso, você deverá trocar a senha.\n\nQualquer dúvida, estamos à disposição! 💕`
+          window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(message)}`, '_blank')
+          setSendViaWhatsApp(false)
+        }
       }
     } catch (error) {
       console.error('Erro ao criar cliente:', error)
@@ -82,6 +93,18 @@ export default function ClientsPage() {
     } catch (error) {
       console.error('Erro ao excluir cliente:', error)
     }
+  }
+
+  const sendCredentialsWhatsApp = (client: Client) => {
+    const phone = client.phone.replace(/\D/g, '')
+    const message = `Olá, ${client.name}! 🌸\n\nSeus dados de acesso ao Salão Reflexus:\n\n👤 Usuário: *${client.username}*\n🔗 Acesse: https://salao-reflexus.vercel.app/cliente\n\nQualquer dúvida, estamos à disposição! 💕`
+    window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(message)}`, '_blank')
+  }
+
+  const copyUsername = (username: string) => {
+    navigator.clipboard.writeText(username)
+    setToast('Usuário copiado!')
+    setTimeout(() => setToast(''), 2000)
   }
 
   return (
@@ -134,30 +157,54 @@ export default function ClientsPage() {
                 <CardContent className="p-4">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
                         {client.name.charAt(0).toUpperCase()}
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{client.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{formatPhone(client.phone)}</p>
-                        <p className="text-xs text-primary-600 dark:text-primary-400">@{client.username}</p>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{client.name}</p>
+                          {client.mustChangePassword && (
+                            <Badge variant="warning">Trocar senha</Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <Phone size={12} />
+                            {formatPhone(client.phone)}
+                          </span>
+                          <span className="text-xs text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-full">
+                            @{client.username}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-400 dark:text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Calendar size={10} />
+                            {formatDate(client.createdAt)}
+                          </span>
+                          {client._count?.appointments !== undefined && (
+                            <span className="flex items-center gap-1">
+                              <Clock size={10} />
+                              {client._count.appointments} agendamento{client._count.appointments !== 1 ? 's' : ''}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                      <Badge variant="info">{client._count?.appointments || 0} atendimentos</Badge>
-                      <div className="flex items-center gap-1">
-                        <Link href={`/clientes/${client.id}`}>
-                          <Button variant="ghost" size="sm">
-                            <Eye size={16} />
-                          </Button>
-                        </Link>
-                        <Button variant="ghost" size="sm">
-                          <Phone size={16} />
+                    <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
+                      <Link href={`/clientes/${client.id}`}>
+                        <Button variant="ghost" size="sm" title="Ver detalhes">
+                          <Eye size={16} />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDelete(client.id)}>
-                          <Trash2 size={16} className="text-red-500" />
-                        </Button>
-                      </div>
+                      </Link>
+                      <Button variant="ghost" size="sm" onClick={() => sendCredentialsWhatsApp(client)} title="Enviar login via WhatsApp">
+                        <MessageCircle size={16} className="text-green-600" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => copyUsername(client.username)} title="Copiar usuário">
+                        <Copy size={16} className="text-blue-600" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(client.id)} title="Excluir">
+                        <Trash2 size={16} className="text-red-500" />
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -167,7 +214,7 @@ export default function ClientsPage() {
         )}
       </div>
 
-      <Modal isOpen={showNewModal} onClose={() => { setShowNewModal(false); setCreatedClient(null) }} title="Novo Cliente">
+      <Modal isOpen={showNewModal} onClose={() => { setShowNewModal(false); setCreatedClient(null); setSendViaWhatsApp(false) }} title="Novo Cliente">
         {createdClient ? (
           <div className="p-6 space-y-4">
             <div className="p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
@@ -197,6 +244,31 @@ export default function ClientsPage() {
                 </div>
               </div>
             </div>
+
+            <div className="flex gap-2">
+              <Button
+                className="flex-1"
+                onClick={() => {
+                  const phone = createdClient.phone.replace(/\D/g, '')
+                  const message = `Olá, ${createdClient.name}! 🌸\n\nSeu cadastro no Salão Reflexus foi realizado com sucesso!\n\n🔐 *Seus dados de acesso:*\n👤 Usuário: *${createdClient.username}*\n🔑 Senha: *${createdClient.password}*\n\nAcesse: https://salao-reflexus.vercel.app/cliente\n\n⚠️ No primeiro acesso, você deverá trocar a senha.\n\nQualquer dúvida, estamos à disposição! 💕`
+                  window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(message)}`, '_blank')
+                }}
+              >
+                <MessageCircle size={18} />
+                Enviar via WhatsApp
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  navigator.clipboard.writeText(createdClient.username)
+                  navigator.clipboard.writeText(createdClient.password)
+                  alert('Credenciais copiadas!')
+                }}
+              >
+                <Copy size={18} />
+              </Button>
+            </div>
+
             <div className="flex gap-3">
               <Button variant="secondary" className="flex-1" onClick={() => { setShowNewModal(false); setCreatedClient(null) }}>
                 Fechar
@@ -229,18 +301,36 @@ export default function ClientsPage() {
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
+            <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <input
+                type="checkbox"
+                checked={sendViaWhatsApp}
+                onChange={(e) => setSendViaWhatsApp(e.target.checked)}
+                className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              />
+              <div>
+                <p className="font-medium text-sm text-gray-900 dark:text-gray-100">Enviar dados de login via WhatsApp</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Enviará automaticamente após cadastrar</p>
+              </div>
+            </label>
             <div className="flex gap-3 justify-end">
               <Button type="button" variant="secondary" onClick={() => setShowNewModal(false)}>
                 Cancelar
               </Button>
               <Button type="submit">
-                <Plus size={18} />
-                Cadastrar
+                <Send size={18} />
+                Cadastrar{sendViaWhatsApp && ' e Enviar'}
               </Button>
             </div>
           </form>
         )}
       </Modal>
+
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-medium shadow-lg animate-fade-in">
+          {toast}
+        </div>
+      )}
     </DashboardLayout>
   )
 }
