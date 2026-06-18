@@ -15,6 +15,7 @@ import {
   Moon,
   LogOut,
   Key,
+  MessageCircle,
 } from 'lucide-react'
 import { cn } from '@/utils/format'
 import { useTheme } from '@/context/ThemeContext'
@@ -26,6 +27,7 @@ interface ClientLayoutProps {
 const navigation = [
   { name: 'Agendar', href: '/cliente/agendar', icon: Calendar },
   { name: 'Meus Agendamentos', href: '/cliente/meus-agendamentos', icon: Clock },
+  { name: 'Chat', href: '/cliente/chat', icon: MessageCircle },
   { name: 'Meu Perfil', href: '/cliente/perfil', icon: User },
 ]
 

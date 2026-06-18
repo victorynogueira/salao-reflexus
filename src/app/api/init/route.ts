@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserByEmail, createUser, createClient, createService, createProfessional, generatePassword } from '@/lib/datastore'
+import { getUserByEmail, createUser, createClient, createService, createProfessional, generatePassword, generateUsername } from '@/lib/datastore'
 import { readData, writeData } from '@/lib/storage'
 import { kvSeedIfEmpty, isKvAvailable } from '@/lib/kv-store'
 import bcrypt from 'bcryptjs'
@@ -84,6 +84,7 @@ export async function POST(request: NextRequest) {
       await createClient({
         name: c.name,
         phone: c.phone,
+        username: generateUsername(c.name),
         password: samplePassword,
         mustChangePassword: true,
       })

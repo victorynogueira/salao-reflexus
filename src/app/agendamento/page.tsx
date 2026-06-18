@@ -23,6 +23,15 @@ import {
 import { format, parse } from 'date-fns'
 import { formatCurrency, calculateEndTime, calculateDuration, generateTimeSlots } from '@/utils/format'
 
+interface AppointmentData {
+  id: string
+  professionalId: string
+  date: string
+  startTime: string
+  endTime: string
+  status: string
+}
+
 interface Client {
   id: string
   name: string
@@ -36,6 +45,7 @@ interface Service {
   price: number
   commission: number
   category: string
+  priceToConfirm?: boolean
 }
 
 interface Professional {
@@ -57,6 +67,7 @@ export default function AgendamentoPage() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
   const [selectedTime, setSelectedTime] = useState('')
   const [notes, setNotes] = useState('')
+  const [appointmentsForDate, setAppointmentsForDate] = useState<AppointmentData[]>([])
 
   const [searchClient, setSearchClient] = useState('')
   const [searchService, setSearchService] = useState('')
@@ -83,10 +94,28 @@ export default function AgendamentoPage() {
     })
   }, [])
 
+  useEffect(() => {
+    if (selectedDate) {
+      fetch(`/api/appointments?date=${selectedDate}`)
+        .then(r => r.json())
+        .then(data => setAppointmentsForDate(Array.isArray(data) ? data.filter((a: any) => a.status !== 'CANCELLED') : []))
+        .catch(() => setAppointmentsForDate([]))
+    }
+  }, [selectedDate])
+
   const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration, 0)
-  const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0)
+  const servicesWithFixedPrice = selectedServices.filter(s => !s.priceToConfirm)
+  const totalPrice = servicesWithFixedPrice.reduce((sum, s) => sum + s.price, 0)
+  const hasPriceToConfirm = selectedServices.some(s => s.priceToConfirm)
   const endTime = selectedTime ? calculateEndTime(selectedTime, totalDuration) : ''
-  const availableSlots = generateTimeSlots('08:00', '20:00', 15)
+  const availableSlots = generateTimeSlots('08:00', '20:00', 15).filter(slot => {
+    if (totalDuration === 0) return true
+    const endSlot = calculateEndTime(slot, totalDuration)
+    return !appointmentsForDate.some(a => {
+      if (selectedProfessional && a.professionalId !== selectedProfessional) return false
+      return slot < a.endTime && endSlot > a.startTime
+    })
+  })
 
   const handleAddService = (service: Service) => {
     if (!selectedServices.find(s => s.id === service.id)) {
@@ -132,6 +161,7 @@ export default function AgendamentoPage() {
             price: s.price,
             commission: s.commission,
             duration: s.duration,
+            priceToConfirm: !!s.priceToConfirm,
           })),
           notes,
           totalPrice,
@@ -265,7 +295,11 @@ export default function AgendamentoPage() {
                         <p className="font-medium text-sm text-gray-900 dark:text-gray-100">{service.name}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">{service.duration} min</p>
                       </div>
-                      <span className="text-sm font-medium text-green-600">{formatCurrency(service.price)}</span>
+                      {service.priceToConfirm ? (
+                        <Badge variant="info">Preço a confirmar</Badge>
+                      ) : (
+                        <span className="text-sm font-medium text-green-600">{formatCurrency(service.price)}</span>
+                      )}
                     </button>
                   ))}
               </div>
@@ -281,7 +315,11 @@ export default function AgendamentoPage() {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-gray-500">{service.duration}min</span>
-                        <span className="text-sm font-medium text-green-600">{formatCurrency(service.price)}</span>
+                        {service.priceToConfirm ? (
+                          <Badge variant="info">Preço a confirmar</Badge>
+                        ) : (
+                          <span className="text-sm font-medium text-green-600">{formatCurrency(service.price)}</span>
+                        )}
                         <Button variant="ghost" size="sm" onClick={() => handleRemoveService(service.id)}>
                           <Trash2 size={14} className="text-red-500" />
                         </Button>
@@ -291,7 +329,11 @@ export default function AgendamentoPage() {
                   <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-4 text-sm">
                       <span className="flex items-center gap-1 text-gray-500"><Clock size={14} /> {totalDuration} min</span>
-                      <span className="flex items-center gap-1 text-green-600 font-medium"><DollarSign size={14} /> {formatCurrency(totalPrice)}</span>
+                      {hasPriceToConfirm ? (
+                        <span className="flex items-center gap-1 text-gray-500 text-xs">Preço total a confirmar</span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-green-600 font-medium"><DollarSign size={14} /> {formatCurrency(totalPrice)}</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -382,7 +424,7 @@ export default function AgendamentoPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Data</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{format(new Date(selectedDate), "dd/MM/yyyy")}</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{format(parse(selectedDate, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy")}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Horário</span>
@@ -401,15 +443,28 @@ export default function AgendamentoPage() {
                 {selectedServices.map((s, i) => (
                   <div key={i} className="flex justify-between text-sm py-1">
                     <span className="text-gray-600 dark:text-gray-400">{s.name}</span>
-                    <span className="text-gray-900 dark:text-gray-100">{formatCurrency(s.price)}</span>
+                    {s.priceToConfirm ? (
+                      <Badge variant="info">Preço a confirmar</Badge>
+                    ) : (
+                      <span className="text-gray-900 dark:text-gray-100">{formatCurrency(s.price)}</span>
+                    )}
                   </div>
                 ))}
               </div>
 
               <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-lg font-bold text-gray-900 dark:text-gray-100">Total</span>
-                <span className="text-xl font-bold text-green-600">{formatCurrency(totalPrice)}</span>
+                {hasPriceToConfirm ? (
+                  <span className="text-base font-semibold text-gray-500">A confirmar</span>
+                ) : (
+                  <span className="text-xl font-bold text-green-600">{formatCurrency(totalPrice)}</span>
+                )}
               </div>
+              {hasPriceToConfirm && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  O valor final será definido no momento do atendimento.
+                </p>
+              )}
 
               {notes && (
                 <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 text-sm text-gray-600 dark:text-gray-400">

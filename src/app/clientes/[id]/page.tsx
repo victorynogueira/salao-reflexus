@@ -19,6 +19,7 @@ interface ClientDetail {
   notes: string | null
   active: boolean
   createdAt: string
+  password?: string
   appointments: {
     id: string
     date: string
@@ -32,6 +33,7 @@ interface ClientDetail {
     services: {
       service: { name: string; price: number }
       price: number
+      priceToConfirm?: boolean
     }[]
   }[]
 }
@@ -217,7 +219,11 @@ export default function ClientDetailPage() {
                           {appointment.services.map((s, i) => (
                             <div key={i} className="flex items-center justify-between text-sm">
                               <span className="text-gray-600 dark:text-gray-400">{s.service.name}</span>
-                              <span className="text-gray-900 dark:text-gray-100">{formatCurrency(s.price)}</span>
+                              {s.priceToConfirm ? (
+                                <Badge variant="info">Preço a confirmar</Badge>
+                              ) : (
+                                <span className="text-gray-900 dark:text-gray-100">{formatCurrency(s.price)}</span>
+                              )}
                             </div>
                           ))}
                           <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">

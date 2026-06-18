@@ -55,5 +55,17 @@
     "active": true,
     "createdAt": "2026-06-17T11:32:51.635Z",
     "updatedAt": "2026-06-17T11:32:51.635Z"
+  },
+  {
+    "name": "Victor Yuri",
+    "phone": "31986440211",
+    "notes": "",
+    "username": "victor1653",
+    "password": "$2a$12$aKc.yyOFOtrvUfaT4jEs8e/8CHKG3Gj8VzpJc5uUtgebyRlih2FgS",
+    "mustChangePassword": false,
+    "id": "mqjqr7r5tlgd0nhvh2p",
+    "active": true,
+    "createdAt": "2026-06-18T16:55:47.969Z",
+    "updatedAt": "2026-06-18T16:56:29.246Z"
   }
 ]

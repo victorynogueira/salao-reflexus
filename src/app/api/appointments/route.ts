@@ -39,6 +39,7 @@ export async function POST(request: Request) {
         price: parseFloat(s.price),
         commission: parseFloat(s.commission) || 0,
         duration: parseInt(s.duration),
+        priceToConfirm: !!s.priceToConfirm,
       }
     })
 

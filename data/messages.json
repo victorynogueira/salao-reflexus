@@ -1,0 +1,82 @@
+[
+  {
+    "clientId": "mqh2iyfoyh696ykrri",
+    "from": "admin",
+    "text": "opa",
+    "read": false,
+    "id": "mqjs8rv98ujuwjp1uea",
+    "createdAt": "2026-06-18T17:37:26.806Z"
+  },
+  {
+    "clientId": "mqh2iy3a8qvebp6gi2v",
+    "from": "admin",
+    "text": "oi",
+    "read": false,
+    "id": "mqjs9d39uvvv164sh9i",
+    "createdAt": "2026-06-18T17:37:54.309Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "from": "admin",
+    "text": "Oi victor",
+    "read": false,
+    "id": "mqjs9y8cg4h1vfp7imu",
+    "createdAt": "2026-06-18T17:38:21.708Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "from": "admin",
+    "text": "ola",
+    "read": false,
+    "id": "mqjui5mn6hyst3v9c7h",
+    "createdAt": "2026-06-18T18:40:43.775Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "from": "client",
+    "text": "oi",
+    "read": true,
+    "id": "mqjukqwvsfii0eae7s",
+    "createdAt": "2026-06-18T18:42:44.671Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "from": "client",
+    "text": "boa tarde",
+    "read": true,
+    "id": "mqjul1qzc94w7r1x7tp",
+    "createdAt": "2026-06-18T18:42:58.715Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "from": "admin",
+    "text": "boa tarde",
+    "read": false,
+    "id": "mqjul66omerirblppd",
+    "createdAt": "2026-06-18T18:43:04.464Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "from": "admin",
+    "text": "tudo bem",
+    "read": false,
+    "id": "mqjulakrc1dqk77r32b",
+    "createdAt": "2026-06-18T18:43:10.155Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "from": "client",
+    "text": "joia",
+    "read": true,
+    "id": "mqjuldlbjxohibmrqr",
+    "createdAt": "2026-06-18T18:43:14.063Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "from": "admin",
+    "text": "confirmei seu horario",
+    "read": false,
+    "id": "mqjumz8b28hzr4zntex",
+    "createdAt": "2026-06-18T18:44:28.763Z"
+  }
+]

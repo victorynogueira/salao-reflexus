@@ -18,7 +18,7 @@ interface Appointment {
   paid: boolean
   notes?: string
   professional: { name: string }
-  services: { service: { name: string; price: number } }[]
+  services: { service: { name: string; price: number }; priceToConfirm?: boolean }[]
 }
 
 export default function ClientHistoryPage() {
@@ -119,7 +119,11 @@ export default function ClientHistoryPage() {
                   <Scissors size={14} />
                   <span>{s.service.name}</span>
                 </div>
-                <span className="text-gray-900 dark:text-gray-100 font-medium">{formatCurrency(s.service.price)}</span>
+                {s.priceToConfirm ? (
+                  <Badge variant="info">Preço a confirmar</Badge>
+                ) : (
+                  <span className="text-gray-900 dark:text-gray-100 font-medium">{formatCurrency(s.service.price)}</span>
+                )}
               </div>
             ))}
           </div>
@@ -129,7 +133,11 @@ export default function ClientHistoryPage() {
               <DollarSign size={16} />
               <span className="font-medium">Total</span>
             </div>
-            <span className="font-bold text-green-600 text-lg">{formatCurrency(appt.totalPrice)}</span>
+            {appt.services.some(s => s.priceToConfirm) ? (
+              <span className="font-semibold text-gray-500">A confirmar</span>
+            ) : (
+              <span className="font-bold text-green-600 text-lg">{formatCurrency(appt.totalPrice)}</span>
+            )}
           </div>
 
           {appt.paid && <Badge variant="success">Pago</Badge>}

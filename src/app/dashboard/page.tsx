@@ -61,7 +61,7 @@ export default function DashboardPage() {
       .then(res => { if (!res.ok) throw new Error('Failed'); return res.json() })
       .then(data => { setData(data); setLoading(false) })
       .catch(() => {
-        setData({ todayAppointments: 0, monthAppointments: 0, todayRevenue: 0, monthRevenue: 0, newClientsThisMonth: 0, topServices: [], topProfessionals: [], recentTransactions: [], dailyRevenue: [] })
+        setData({ todayAppointments: 0, monthAppointments: 0, todayRevenue: 0, monthRevenue: 0, newClientsThisMonth: 0, topServices: [], topProfessionals: [], recentTransactions: [], dailyRevenue: [], todayList: [] })
         setLoading(false)
       })
 

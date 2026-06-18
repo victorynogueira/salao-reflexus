@@ -3,10 +3,11 @@ import { getService, updateService, deleteService } from '@/lib/datastore'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const service = await getService(params.id)
+    const { id } = await params
+    const service = await getService(id)
     if (!service) {
       return NextResponse.json({ error: 'Serviço não encontrado' }, { status: 404 })
     }
@@ -18,11 +19,12 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
-    const service = await updateService(params.id, body)
+    const service = await updateService(id, body)
     if (!service) {
       return NextResponse.json({ error: 'Serviço não encontrado' }, { status: 404 })
     }
@@ -34,10 +36,11 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await deleteService(params.id)
+    const { id } = await params
+    await deleteService(id)
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })

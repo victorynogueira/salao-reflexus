@@ -20,6 +20,7 @@ interface Service {
   commission: number
   category: string
   active: boolean
+  priceToConfirm?: boolean
 }
 
 const CATEGORIES = [
@@ -47,6 +48,7 @@ export default function ServicesPage() {
     price: '',
     commission: '0',
     category: 'Corte',
+    priceToConfirm: false,
   })
 
   const fetchServices = async () => {
@@ -87,7 +89,7 @@ export default function ServicesPage() {
       })
       if (res.ok) {
         setShowNewModal(false)
-        setFormData({ name: '', description: '', duration: '30', price: '', commission: '0', category: 'Corte' })
+        setFormData({ name: '', description: '', duration: '30', price: '', commission: '0', category: 'Corte', priceToConfirm: false })
         fetchServices()
       }
     } catch (error) {
@@ -188,10 +190,14 @@ export default function ServicesPage() {
                             <Clock size={14} />
                             {service.duration}min
                           </span>
-                          <span className="flex items-center gap-1 text-sm text-green-600 font-medium">
-                            <DollarSign size={14} />
-                            {formatCurrency(service.price)}
-                          </span>
+                          {service.priceToConfirm ? (
+                            <Badge variant="info">Preço a confirmar</Badge>
+                          ) : (
+                            <span className="flex items-center gap-1 text-sm text-green-600 font-medium">
+                              <DollarSign size={14} />
+                              {formatCurrency(service.price)}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -218,6 +224,19 @@ export default function ServicesPage() {
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+            <input
+              type="checkbox"
+              id="priceToConfirm"
+              checked={formData.priceToConfirm}
+              onChange={(e) => setFormData({ ...formData, priceToConfirm: e.target.checked, price: e.target.checked ? '' : formData.price })}
+              className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
+            />
+            <label htmlFor="priceToConfirm" className="text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer">
+              Preço a confirmar
+            </label>
+            <span className="text-xs text-gray-500 dark:text-gray-400">O preço será definido no momento do atendimento</span>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="Duração (minutos)"
@@ -227,17 +246,17 @@ export default function ServicesPage() {
               required
             />
             <Input
-              label="Valor (R$)"
+              label={formData.priceToConfirm ? 'Preço médio (R$) - referência' : 'Valor (R$)'}
               type="number"
               step="0.01"
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-              required
+              required={!formData.priceToConfirm}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Comissão (R$)"
+              label={formData.priceToConfirm ? 'Comissão estimada (R$)' : 'Comissão (R$)'}
               type="number"
               step="0.01"
               value={formData.commission}
@@ -250,6 +269,11 @@ export default function ServicesPage() {
               options={CATEGORIES.map(c => ({ value: c, label: c }))}
             />
           </div>
+          {formData.priceToConfirm && formData.price && (
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Preço médio de referência: {formatCurrency(parseFloat(formData.price))}
+            </p>
+          )}
           <div className="flex gap-3 justify-end">
             <Button type="button" variant="secondary" onClick={() => setShowNewModal(false)}>
               Cancelar

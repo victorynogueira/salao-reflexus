@@ -16,6 +16,7 @@ interface Service {
   duration: number
   price: number
   category: string
+  priceToConfirm?: boolean
 }
 
 interface Appointment {
@@ -59,7 +60,9 @@ export default function ClientBookPage() {
   }, [])
 
   const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration, 0)
-  const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0)
+  const servicesWithFixedPrice = selectedServices.filter(s => !s.priceToConfirm)
+  const totalPrice = servicesWithFixedPrice.reduce((sum, s) => sum + s.price, 0)
+  const hasPriceToConfirm = selectedServices.some(s => s.priceToConfirm)
 
   const displayDays = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i + dateOffset))
 
@@ -193,7 +196,11 @@ export default function ClientBookPage() {
                         <p className="text-xs text-gray-500">{service.category} · {service.duration} min</p>
                       </div>
                     </div>
-                    <p className="font-semibold text-sm text-green-600">{formatCurrency(service.price)}</p>
+                    {service.priceToConfirm ? (
+                      <Badge variant="info">Preço a confirmar</Badge>
+                    ) : (
+                      <p className="font-semibold text-sm text-green-600">{formatCurrency(service.price)}</p>
+                    )}
                   </button>
                 )
               })}
@@ -293,12 +300,20 @@ export default function ClientBookPage() {
               {selectedServices.map(s => (
                 <div key={s.id} className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">{s.name}</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(s.price)}</span>
+                  {s.priceToConfirm ? (
+                    <Badge variant="info">Preço a confirmar</Badge>
+                  ) : (
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(s.price)}</span>
+                  )}
                 </div>
               ))}
               <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
                 <span className="font-bold text-gray-900 dark:text-gray-100 text-lg">Total</span>
-                <span className="font-bold text-green-600 text-lg">{formatCurrency(totalPrice)}</span>
+                {hasPriceToConfirm ? (
+                  <span className="font-semibold text-gray-500">A confirmar no atendimento</span>
+                ) : (
+                  <span className="font-bold text-green-600 text-lg">{formatCurrency(totalPrice)}</span>
+                )}
               </div>
               <div className="text-center p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
                 <p className="text-sm text-gray-600 dark:text-gray-400">

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
+import Badge from '@/components/ui/Badge'
 import { format, addDays, isSunday, parse } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { getWhatsAppLink, formatCurrency } from '@/utils/format'
@@ -25,6 +26,8 @@ interface Service {
   duration: number
   price: number
   category: string
+  active: boolean
+  priceToConfirm?: boolean
 }
 
 interface Appointment {
@@ -68,7 +71,9 @@ export default function RequestAppointmentPage() {
   }, [])
 
   const totalDuration = selectedServices.reduce((s, sv) => s + sv.duration, 0)
-  const totalPrice = selectedServices.reduce((s, sv) => s + sv.price, 0)
+  const servicesWithFixedPrice = selectedServices.filter(s => !s.priceToConfirm)
+  const totalPrice = servicesWithFixedPrice.reduce((s, sv) => s + sv.price, 0)
+  const hasPriceToConfirm = selectedServices.some(s => s.priceToConfirm)
 
   const getAvailableSlots = () => {
     if (!selectedDate || totalDuration === 0) return []
@@ -180,17 +185,25 @@ export default function RequestAppointmentPage() {
                         <p className="text-sm text-gray-500">{service.duration} min</p>
                       </div>
                     </div>
-                    <span className="font-semibold text-green-600">{formatCurrency(service.price)}</span>
+                    {service.priceToConfirm ? (
+                      <Badge variant="info">Preço a confirmar</Badge>
+                    ) : (
+                      <span className="font-semibold text-green-600">{formatCurrency(service.price)}</span>
+                    )}
                   </button>
                 )
               })}
             </div>
 
-            {selectedServices.length > 0 && (
+              {selectedServices.length > 0 && (
               <div className="mt-4 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">{selectedServices.length} serviço(s) • {totalDuration}min</span>
-                  <span className="font-bold text-green-600">{formatCurrency(totalPrice)}</span>
+                  {hasPriceToConfirm ? (
+                    <span className="font-semibold text-gray-500">Preço a confirmar</span>
+                  ) : (
+                    <span className="font-bold text-green-600">{formatCurrency(totalPrice)}</span>
+                  )}
                 </div>
               </div>
             )}
@@ -266,14 +279,22 @@ export default function RequestAppointmentPage() {
                   {selectedServices.map((s, i) => (
                     <div key={i} className="flex justify-between text-sm py-1">
                       <span className="text-gray-600 dark:text-gray-400">{s.name} ({s.duration}min)</span>
-                      <span>{formatCurrency(s.price)}</span>
+                      {s.priceToConfirm ? (
+                        <Badge variant="info">Preço a confirmar</Badge>
+                      ) : (
+                        <span>{formatCurrency(s.price)}</span>
+                      )}
                     </div>
                   ))}
                 </div>
 
                 <div className="flex justify-between font-bold pt-2 border-t border-gray-200 dark:border-gray-700">
                   <span>Total</span>
-                  <span className="text-green-600">{formatCurrency(totalPrice)}</span>
+                  {hasPriceToConfirm ? (
+                    <span className="text-gray-500">A confirmar</span>
+                  ) : (
+                    <span className="text-green-600">{formatCurrency(totalPrice)}</span>
+                  )}
                 </div>
 
                 <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-sm text-blue-700 dark:text-blue-400">

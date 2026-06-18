@@ -21,12 +21,13 @@ import {
   Check,
   Bell,
 } from 'lucide-react'
-import { format, addDays, subDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns'
+import { format, parse, addDays, subDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { formatCurrency, formatPhone, getWhatsAppLink, generateTimeSlots } from '@/utils/format'
 
 interface Appointment {
   id: string
+  clientId: string
   date: string
   startTime: string
   endTime: string
@@ -35,8 +36,8 @@ interface Appointment {
   paid: boolean
   notes: string | null
   client: { name: string; phone: string }
-  professional: { name: string }
-  services: { service: { name: string } }[]
+  professional: { id: string; name: string }
+  services: { service: { name: string; price: number }; priceToConfirm?: boolean }[]
 }
 
 interface Professional {
@@ -55,6 +56,9 @@ export default function AgendaPage() {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showReminderModal, setShowReminderModal] = useState(false)
+  const [reminderSending, setReminderSending] = useState(false)
+  const [reminderSent, setReminderSent] = useState<string[]>([])
   const [pendingCount, setPendingCount] = useState(0)
 
   const fetchAppointments = async () => {
@@ -125,6 +129,23 @@ export default function AgendaPage() {
     } catch (error) {
       console.error('Erro ao cancelar:', error)
     }
+  }
+
+  const todayAppointments = appointments.filter(a =>
+    a.status === 'SCHEDULED' || a.status === 'CONFIRMED'
+  )
+
+  const handleSendReminders = async () => {
+    setReminderSending(true)
+    const sent: string[] = []
+    for (const appt of todayAppointments) {
+      const message = `Olá ${appt.client.name}! Lembrete do seu horário hoje às ${appt.startTime} no Salão Reflexus. Confirmamos sua presença? 😊`
+      window.open(getWhatsAppLink(appt.client.phone, message), '_blank')
+      sent.push(appt.id)
+      setReminderSent([...sent])
+      await new Promise(r => setTimeout(r, 800))
+    }
+    setReminderSending(false)
   }
 
   const timeSlots = generateTimeSlots('08:00', '20:00', 30)
@@ -202,48 +223,52 @@ export default function AgendaPage() {
             </CardContent>
           </Card>
         )}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Agenda</h1>
-          </div>
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Agenda</h1>
           <div className="flex items-center gap-2">
-            <Button onClick={() => router.push('/agendamento')}>
-              <Plus size={18} />
-              Novo Agendamento
+            {todayAppointments.length > 0 && (
+              <Button variant="secondary" size="sm" onClick={() => setShowReminderModal(true)}>
+                <MessageCircle size={16} />
+                <span className="hidden sm:inline ml-1">Lembrar</span>
+              </Button>
+            )}
+            <Button onClick={() => router.push('/agendamento')} size="sm">
+              <Plus size={16} />
+              <span className="hidden sm:inline">Novo Agendamento</span>
             </Button>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex items-center gap-2 flex-1">
-            <Button variant="secondary" size="sm" onClick={handlePrev}>
-              <ChevronLeft size={18} />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
+            <Button variant="secondary" size="sm" onClick={handlePrev} className="shrink-0">
+              <ChevronLeft size={16} />
             </Button>
-            <span className="text-lg font-semibold text-gray-900 dark:text-gray-100 min-w-[200px] text-center">
+            <span className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-gray-100 text-center truncate">
               {view === 'month'
-                ? format(currentDate, 'MMMM yyyy', { locale: ptBR })
+                ? format(currentDate, "MMMM 'yy", { locale: ptBR })
                 : view === 'week'
                 ? `${format(dates[0], 'dd/MM')} - ${format(dates[dates.length - 1], 'dd/MM/yyyy')}`
-                : format(currentDate, "EEEE, dd 'de' MMMM", { locale: ptBR })}
+                : format(currentDate, "dd/MM/yyyy")}
             </span>
-            <Button variant="secondary" size="sm" onClick={handleNext}>
-              <ChevronRight size={18} />
+            <Button variant="secondary" size="sm" onClick={handleNext} className="shrink-0">
+              <ChevronRight size={16} />
             </Button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <div className="flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden">
               {(['day', 'week', 'month'] as const).map((v) => (
                 <button
                   key={v}
                   onClick={() => setView(v)}
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors ${
                     view === v
                       ? 'bg-primary-600 text-white'
                       : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
-                  {v === 'day' ? 'Dia' : v === 'week' ? 'Semana' : 'Mês'}
+                  {v === 'day' ? 'Dia' : v === 'week' ? 'Sem' : 'Mês'}
                 </button>
               ))}
             </div>
@@ -251,7 +276,7 @@ export default function AgendaPage() {
               value={selectedProfessional}
               onChange={(e) => setSelectedProfessional(e.target.value)}
               options={[{ value: '', label: 'Todos' }, ...professionals.map(p => ({ value: p.id, label: p.name }))]}
-              className="w-40"
+              className="w-28 sm:w-40"
             />
           </div>
         </div>
@@ -261,11 +286,11 @@ export default function AgendaPage() {
             <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
           </div>
         ) : view === 'month' ? (
-          <Card>
-            <CardContent className="p-4">
-              <div className="grid grid-cols-7 gap-1 text-center">
+          <Card className="-mx-4 sm:mx-0 rounded-none sm:rounded-xl border-x-0 sm:border-x">
+            <CardContent className="p-0 sm:p-4">
+              <div className="grid grid-cols-7 gap-0 text-center">
                 {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
-                  <div key={day} className="text-sm font-medium text-gray-500 dark:text-gray-400 py-2">{day}</div>
+                  <div key={day} className="text-[10px] sm:text-sm font-medium text-gray-500 dark:text-gray-400 py-1 sm:py-2 border-b border-gray-200 dark:border-gray-700">{day}</div>
                 ))}
                 {eachDayOfInterval({
                   start: startOfWeek(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1), { locale: ptBR }),
@@ -273,22 +298,22 @@ export default function AgendaPage() {
                 }).map((date, idx) => {
                   const isCurrentMonth = date.getMonth() === currentDate.getMonth()
                   const isToday = isSameDay(date, new Date())
-                  const dayAppointments = appointments.filter(a => isSameDay(new Date(a.date), date))
+                  const dayAppointments = appointments.filter(a => isSameDay(parse(a.date, 'yyyy-MM-dd', new Date()), date))
 
                   return (
                     <div
                       key={idx}
-                      className={`min-h-[80px] p-1 rounded-lg border ${
-                        isCurrentMonth ? 'border-gray-200 dark:border-gray-700' : 'border-transparent opacity-50'
-                      } ${isToday ? 'bg-primary-50 dark:bg-primary-900/20' : ''}`}
+                      className={`min-h-[32px] sm:min-h-[80px] p-0 sm:p-1 border-b border-r border-gray-100 dark:border-gray-800 ${
+                        (idx + 1) % 7 === 0 ? 'border-r-0' : ''
+                      } ${isCurrentMonth ? '' : 'opacity-40'} ${isToday ? 'bg-primary-50 dark:bg-primary-900/20' : ''}`}
                     >
-                      <span className={`text-sm ${isToday ? 'font-bold text-primary-600' : 'text-gray-700 dark:text-gray-300'}`}>
+                      <span className={`text-[10px] sm:text-sm leading-none sm:leading-normal ${isToday ? 'font-bold text-primary-600' : 'text-gray-700 dark:text-gray-300'}`}>
                         {format(date, 'dd')}
                       </span>
                       {dayAppointments.slice(0, 2).map(a => (
                         <div
                           key={a.id}
-                          className="mt-1 text-xs px-1 py-0.5 rounded truncate cursor-pointer hover:opacity-80"
+                          className="hidden sm:block mt-1 text-xs px-1 py-0.5 rounded truncate cursor-pointer hover:opacity-80"
                           style={{ backgroundColor: '#c026d320', color: '#c026d3' }}
                           onClick={() => { setSelectedAppointment(a); setShowDetailsModal(true) }}
                         >
@@ -296,7 +321,18 @@ export default function AgendaPage() {
                         </div>
                       ))}
                       {dayAppointments.length > 2 && (
-                        <div className="text-xs text-gray-500">+{dayAppointments.length - 2}</div>
+                        <div className="hidden sm:block text-xs text-gray-500">+{dayAppointments.length - 2}</div>
+                      )}
+                      {dayAppointments.length > 0 && (
+                        <div className="sm:hidden flex justify-center gap-[1px] mt-[1px]">
+                          {dayAppointments.slice(0, 4).map((a, i) => (
+                            <div
+                              key={i}
+                              className="w-1 h-1 rounded-full"
+                              style={{ backgroundColor: '#c026d3' }}
+                            />
+                          ))}
+                        </div>
                       )}
                     </div>
                   )
@@ -305,47 +341,47 @@ export default function AgendaPage() {
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardContent className="p-4 overflow-x-auto">
-              <div className="min-w-[600px]">
-                <div className="grid gap-4">
+          <Card className="-mx-4 sm:mx-0 rounded-none sm:rounded-xl border-x-0 sm:border-x">
+            <CardContent className="p-0 sm:p-4 overflow-x-auto">
+              <div className="min-w-[300px] sm:min-w-0">
+                <div className="divide-y divide-gray-100 dark:divide-gray-800">
                   {(view === 'day' ? [currentDate] : dates).map((date) => (
                     <div key={date.toString()}>
                       {view === 'week' && (
-                        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <h3 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 px-2 sm:px-0 py-2 bg-gray-50 dark:bg-gray-800/50 sm:bg-transparent">
                           {format(date, "EEEE, dd/MM", { locale: ptBR })}
                         </h3>
                       )}
-                      <div className="space-y-1">
+                      <div>
                         {timeSlots.map((slot) => {
                           const appt = getAppointmentForSlot(slot)
                           const isStart = isSlotStart(slot)
                           if (appt && !isStart) return null
 
                           return (
-                            <div key={slot} className="flex items-center gap-3 py-2 border-b border-gray-100 dark:border-gray-800">
-                              <span className="text-sm text-gray-500 dark:text-gray-400 w-12">{slot}</span>
+                            <div key={slot} className="flex items-center gap-1 sm:gap-3 px-1 sm:px-0 py-1.5 sm:py-2 border-b border-gray-100 dark:border-gray-800 last:border-b-0">
+                              <span className="text-[11px] sm:text-sm text-gray-500 dark:text-gray-400 w-10 sm:w-12 shrink-0 text-center">{slot}</span>
                               {appt ? (
                                 <div
-                                  className={`flex-1 px-3 py-2 rounded-lg cursor-pointer hover:opacity-90 transition-opacity ${statusColors[appt.status] || statusColors.SCHEDULED}`}
+                                  className={`flex-1 min-w-0 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg cursor-pointer hover:opacity-90 transition-opacity ${statusColors[appt.status] || statusColors.SCHEDULED}`}
                                   onClick={() => { setSelectedAppointment(appt); setShowDetailsModal(true) }}
                                 >
-                                  <div className="flex items-center justify-between">
-                                    <div>
-                                      <p className="font-medium text-sm">{appt.client.name}</p>
-                                      <p className="text-xs opacity-80">{appt.services.map(s => s.service.name).join(', ')}</p>
+                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0 sm:gap-2">
+                                    <div className="min-w-0">
+                                      <p className="font-medium text-xs sm:text-sm truncate">{appt.client.name}</p>
+                                      <p className="text-[10px] sm:text-xs opacity-80 truncate hidden sm:block">{appt.services.map(s => s.service.name).join(', ')}</p>
                                     </div>
-                                    <div className="text-right">
-                                      <p className="text-sm font-medium">{appt.startTime} - {appt.endTime}</p>
+                                    <div className="flex items-center gap-1 sm:flex-col sm:items-end shrink-0">
+                                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-300">{appt.startTime}-{appt.endTime}</span>
                                       <Badge variant={appt.status === 'COMPLETED' ? 'success' : appt.status === 'CANCELLED' ? 'danger' : 'info'}>
-                                        {statusLabels[appt.status]}
+                                        <span className="text-[9px] sm:text-xs">{statusLabels[appt.status]}</span>
                                       </Badge>
                                     </div>
                                   </div>
                                 </div>
                               ) : (
                                 <div
-                                  className="flex-1 px-3 py-2 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-600 text-sm hover:border-primary-300 dark:hover:border-primary-700 hover:text-primary-500 cursor-pointer transition-colors"
+                                  className="flex-1 min-w-0 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-600 text-[11px] sm:text-sm hover:border-primary-300 dark:hover:border-primary-700 hover:text-primary-500 cursor-pointer transition-colors text-center sm:text-left"
                                   onClick={() => router.push('/agendamento')}
                                 >
                                   Disponível
@@ -380,7 +416,7 @@ export default function AgendaPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500 dark:text-gray-400">Data</span>
-                <span className="font-medium">{format(new Date(selectedAppointment.date), "dd/MM/yyyy")}</span>
+                <span className="font-medium">{format(parse(selectedAppointment.date, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy")}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400"><Clock size={14} /> Horário</span>
@@ -403,13 +439,26 @@ export default function AgendaPage() {
               {selectedAppointment.services.map((s, i) => (
                 <div key={i} className="flex justify-between text-sm py-1">
                   <span className="text-gray-600 dark:text-gray-400">{s.service.name}</span>
-                  <span className="text-gray-900 dark:text-gray-100">{formatCurrency(s.service.price)}</span>
+                  {s.priceToConfirm ? (
+                    <Badge variant="info">Preço a confirmar</Badge>
+                  ) : (
+                    <span className="text-gray-900 dark:text-gray-100">{formatCurrency(s.service.price)}</span>
+                  )}
                 </div>
               ))}
               <div className="flex justify-between font-medium mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
                 <span>Total</span>
-                <span className="text-green-600">{formatCurrency(selectedAppointment.totalPrice)}</span>
+                {selectedAppointment.services.some(s => s.priceToConfirm) ? (
+                  <span className="text-gray-500">A confirmar</span>
+                ) : (
+                  <span className="text-green-600">{formatCurrency(selectedAppointment.totalPrice)}</span>
+                )}
               </div>
+              {selectedAppointment.services.some(s => s.priceToConfirm) && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  * O valor final será definido no momento do atendimento
+                </p>
+              )}
             </div>
 
             {selectedAppointment.status === 'PENDING' && (
@@ -419,8 +468,20 @@ export default function AgendaPage() {
             )}
 
             <div className="flex gap-2">
+              <Button
+                className="flex-1"
+                variant="secondary"
+                onClick={() => {
+                  setShowDetailsModal(false)
+                  setSelectedAppointment(null)
+                  window.dispatchEvent(new CustomEvent('open-chat', { detail: { clientId: selectedAppointment.clientId, clientName: selectedAppointment.client.name } }))
+                }}
+              >
+                <MessageCircle size={18} />
+                Chat
+              </Button>
               <a
-                href={getWhatsAppLink(selectedAppointment.client.phone, `Olá ${selectedAppointment.client.name}! ${selectedAppointment.status === 'PENDING' ? 'Sua solicitação' : 'Confirmando seu agendamento'} para ${format(new Date(selectedAppointment.date), "dd/MM")} às ${selectedAppointment.startTime}.`)}
+                href={getWhatsAppLink(selectedAppointment.client.phone, `Olá ${selectedAppointment.client.name}! ${selectedAppointment.status === 'PENDING' ? 'Sua solicitação' : 'Confirmando seu agendamento'} para ${format(parse(selectedAppointment.date, 'yyyy-MM-dd', new Date()), "dd/MM")} às ${selectedAppointment.startTime}.`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1"
@@ -506,6 +567,42 @@ export default function AgendaPage() {
             </Button>
             <Button variant="danger" onClick={handleCancel}>
               Sim, Cancelar
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showReminderModal} onClose={() => { setShowReminderModal(false); setReminderSent([]) }} title="Lembrar Clientes" size="lg">
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {todayAppointments.length} cliente(s) para lembrar hoje:
+          </p>
+          <div className="max-h-60 overflow-y-auto space-y-2">
+            {todayAppointments.map(appt => (
+              <div key={appt.id} className={`flex items-center justify-between p-3 rounded-lg border ${
+                reminderSent.includes(appt.id)
+                  ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20'
+                  : 'border-gray-200 dark:border-gray-700'
+              }`}>
+                <div>
+                  <p className="font-medium text-sm text-gray-900 dark:text-gray-100">{appt.client.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{appt.startTime} - {appt.services.map(s => s.service.name).join(', ')}</p>
+                </div>
+                {reminderSent.includes(appt.id) ? (
+                  <Check size={16} className="text-green-600 shrink-0" />
+                ) : (
+                  <MessageCircle size={16} className="text-gray-400 shrink-0" />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-3 justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
+            <Button variant="secondary" onClick={() => { setShowReminderModal(false); setReminderSent([]) }}>
+              Fechar
+            </Button>
+            <Button onClick={handleSendReminders} disabled={reminderSending}>
+              <MessageCircle size={18} />
+              {reminderSending ? 'Enviando...' : `Enviar ${todayAppointments.length} lembrete(s)`}
             </Button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getClients, createClient, getClientByUsername } from '@/lib/datastore'
+import { getClients, createClient, getClientByUsername, generateUsername, generatePassword } from '@/lib/datastore'
 import bcrypt from 'bcryptjs'
 
 export async function GET(request: Request) {
@@ -39,7 +39,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Telefone já cadastrado' }, { status: 409 })
     }
 
-    const client = await createClient({ name, phone, notes })
+    const username = generateUsername(name)
+    const plainPassword = generatePassword()
+    const client = await createClient({ name, phone, notes, username, password: plainPassword, mustChangePassword: true })
 
     return NextResponse.json({
       id: client.id,

@@ -16,19 +16,24 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, description, duration, price, commission, category } = body
+    const { name, description, duration, price, commission, category, priceToConfirm } = body
 
-    if (!name || !duration || !price || !category) {
-      return NextResponse.json({ error: 'Nome, duração, valor e categoria são obrigatórios' }, { status: 400 })
+    if (!name || !duration || !category) {
+      return NextResponse.json({ error: 'Nome, duração e categoria são obrigatórios' }, { status: 400 })
+    }
+
+    if (!priceToConfirm && !price) {
+      return NextResponse.json({ error: 'Valor é obrigatório quando não for "Preço a confirmar"' }, { status: 400 })
     }
 
     const service = await createService({
       name,
       description,
       duration: parseInt(duration),
-      price: parseFloat(price),
+      price: parseFloat(price) || 0,
       commission: parseFloat(commission) || 0,
       category,
+      priceToConfirm: !!priceToConfirm,
     })
 
     return NextResponse.json(service, { status: 201 })

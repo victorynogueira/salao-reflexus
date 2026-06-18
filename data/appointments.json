@@ -104,5 +104,429 @@
     "id": "mqh2mxbxzfy7to68tn",
     "createdAt": "2026-06-16T20:05:04.702Z",
     "updatedAt": "2026-06-16T20:05:04.702Z"
+  },
+  {
+    "clientId": "mqh2iyfoyh696ykrri",
+    "client": {
+      "id": "mqh2iyfoyh696ykrri",
+      "name": "Lucia Ferreira",
+      "phone": "11955555555",
+      "username": "lucia4624",
+      "active": true,
+      "createdAt": "2026-06-16T20:01:59.508Z",
+      "updatedAt": "2026-06-16T20:01:59.508Z"
+    },
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
+    "professional": {
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
+      "active": true,
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
+    },
+    "date": "2026-06-18",
+    "startTime": "13:15",
+    "endTime": "13:35",
+    "notes": "",
+    "totalPrice": 25,
+    "totalDuration": 20,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqh2ix17q8jxjzpowh8",
+        "service": {
+          "name": "Barba",
+          "description": "Barba completa com navalha",
+          "duration": 20,
+          "price": 25,
+          "commission": 8,
+          "category": "Barba",
+          "id": "mqh2ix17q8jxjzpowh8",
+          "active": true,
+          "createdAt": "2026-06-16T20:01:57.691Z",
+          "updatedAt": "2026-06-16T20:01:57.691Z"
+        },
+        "price": 25,
+        "commission": 8,
+        "duration": 20
+      }
+    ],
+    "id": "mqjqk4cgocigv4bxzqo",
+    "createdAt": "2026-06-18T16:50:16.960Z",
+    "updatedAt": "2026-06-18T16:50:16.960Z"
+  },
+  {
+    "clientId": "mqh2iyfoyh696ykrri",
+    "client": {
+      "id": "mqh2iyfoyh696ykrri",
+      "name": "Lucia Ferreira",
+      "phone": "11955555555",
+      "username": "lucia4624",
+      "active": true,
+      "createdAt": "2026-06-16T20:01:59.508Z",
+      "updatedAt": "2026-06-16T20:01:59.508Z"
+    },
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
+    "professional": {
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
+      "active": true,
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
+    },
+    "date": "2026-06-18",
+    "startTime": "08:00",
+    "endTime": "08:30",
+    "notes": "",
+    "totalPrice": 45,
+    "totalDuration": 30,
+    "status": "CANCELLED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqh2iwxa7v8kkj7ytco",
+        "service": {
+          "name": "Corte Masculino",
+          "description": "Corte de cabelo masculino completo",
+          "duration": 30,
+          "price": 45,
+          "commission": 15,
+          "category": "Corte",
+          "id": "mqh2iwxa7v8kkj7ytco",
+          "active": true,
+          "createdAt": "2026-06-16T20:01:57.550Z",
+          "updatedAt": "2026-06-16T20:01:57.550Z"
+        },
+        "price": 45,
+        "commission": 15,
+        "duration": 30
+      }
+    ],
+    "id": "mqjqkhrbvmiocwxhra",
+    "createdAt": "2026-06-18T16:50:34.343Z",
+    "updatedAt": "2026-06-18T16:51:27.338Z"
+  },
+  {
+    "clientId": "mqh2iyfoyh696ykrri",
+    "client": {
+      "id": "mqh2iyfoyh696ykrri",
+      "name": "Lucia Ferreira",
+      "phone": "11955555555",
+      "username": "lucia4624",
+      "active": true,
+      "createdAt": "2026-06-16T20:01:59.508Z",
+      "updatedAt": "2026-06-16T20:01:59.508Z"
+    },
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
+    "professional": {
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
+      "active": true,
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
+    },
+    "date": "2026-06-18",
+    "startTime": "19:30",
+    "endTime": "20:30",
+    "notes": "",
+    "totalPrice": 80,
+    "totalDuration": 60,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqh2iwy12boulcmezj8",
+        "service": {
+          "name": "Escova",
+          "description": "Escova modelada",
+          "duration": 60,
+          "price": 80,
+          "commission": 25,
+          "category": "Escova",
+          "id": "mqh2iwy12boulcmezj8",
+          "active": true,
+          "createdAt": "2026-06-16T20:01:57.577Z",
+          "updatedAt": "2026-06-16T20:01:57.577Z"
+        },
+        "price": 80,
+        "commission": 25,
+        "duration": 60
+      }
+    ],
+    "id": "mqjqktrkkq9x6393f",
+    "createdAt": "2026-06-18T16:50:49.904Z",
+    "updatedAt": "2026-06-18T16:50:49.904Z"
+  },
+  {
+    "clientId": "mqh2jsyjk3fo7mj6kee",
+    "client": {
+      "id": "mqh2jsyjk3fo7mj6kee",
+      "name": "Victor Yuri",
+      "phone": "31986440219",
+      "username": "victor6078",
+      "active": true,
+      "createdAt": "2026-06-16T20:02:39.067Z",
+      "updatedAt": "2026-06-16T20:03:15.267Z"
+    },
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
+    "professional": {
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
+      "active": true,
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
+    },
+    "date": "2026-06-18",
+    "startTime": "17:15",
+    "endTime": "17:35",
+    "notes": "",
+    "totalPrice": 25,
+    "totalDuration": 20,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqh2ix17q8jxjzpowh8",
+        "service": {
+          "name": "Barba",
+          "description": "Barba completa com navalha",
+          "duration": 20,
+          "price": 25,
+          "commission": 8,
+          "category": "Barba",
+          "id": "mqh2ix17q8jxjzpowh8",
+          "active": true,
+          "createdAt": "2026-06-16T20:01:57.691Z",
+          "updatedAt": "2026-06-16T20:01:57.691Z"
+        },
+        "price": 25,
+        "commission": 8,
+        "duration": 20
+      }
+    ],
+    "id": "mqjqm02s5vnfac105sc",
+    "createdAt": "2026-06-18T16:51:44.740Z",
+    "updatedAt": "2026-06-18T16:51:44.740Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "client": {
+      "id": "mqjqr7r5tlgd0nhvh2p",
+      "name": "Victor Yuri",
+      "phone": "31986440211",
+      "username": "victor1653",
+      "active": true,
+      "createdAt": "2026-06-18T16:55:47.969Z",
+      "updatedAt": "2026-06-18T16:56:29.246Z"
+    },
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
+    "professional": {
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
+      "active": true,
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
+    },
+    "date": "2026-06-19",
+    "startTime": "08:00",
+    "endTime": "08:20",
+    "notes": "Solicitação via WhatsApp - Barba",
+    "totalPrice": 25,
+    "totalDuration": 20,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqh2ix17q8jxjzpowh8",
+        "service": {
+          "name": "Barba",
+          "description": "Barba completa com navalha",
+          "duration": 20,
+          "price": 25,
+          "commission": 8,
+          "category": "Barba",
+          "id": "mqh2ix17q8jxjzpowh8",
+          "active": true,
+          "createdAt": "2026-06-16T20:01:57.691Z",
+          "updatedAt": "2026-06-16T20:01:57.691Z"
+        },
+        "price": 25,
+        "commission": 17.5,
+        "duration": 20
+      }
+    ],
+    "id": "mqjqsekjmji6trb8w1",
+    "createdAt": "2026-06-18T16:56:43.459Z",
+    "updatedAt": "2026-06-18T16:58:19.953Z"
+  },
+  {
+    "clientId": "mqh2iyfoyh696ykrri",
+    "client": {
+      "id": "mqh2iyfoyh696ykrri",
+      "name": "Lucia Ferreira",
+      "phone": "11955555555",
+      "username": "lucia4624",
+      "active": true,
+      "createdAt": "2026-06-16T20:01:59.508Z",
+      "updatedAt": "2026-06-16T20:01:59.508Z"
+    },
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
+    "professional": {
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
+      "active": true,
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
+    },
+    "date": "2026-06-18",
+    "startTime": "09:30",
+    "endTime": "11:00",
+    "notes": "",
+    "totalPrice": 120,
+    "totalDuration": 90,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqh2ix0j5deh7wecdda",
+        "service": {
+          "name": "Coloração",
+          "description": "Coloração completa",
+          "duration": 90,
+          "price": 120,
+          "commission": 40,
+          "category": "Coloração",
+          "id": "mqh2ix0j5deh7wecdda",
+          "active": true,
+          "createdAt": "2026-06-16T20:01:57.667Z",
+          "updatedAt": "2026-06-16T20:01:57.667Z"
+        },
+        "price": 120,
+        "commission": 40,
+        "duration": 90
+      }
+    ],
+    "id": "mqjrizjy4oftoe24cgd",
+    "createdAt": "2026-06-18T17:17:23.710Z",
+    "updatedAt": "2026-06-18T17:17:23.710Z"
+  },
+  {
+    "clientId": "mqh2iy3a8qvebp6gi2v",
+    "client": {
+      "id": "mqh2iy3a8qvebp6gi2v",
+      "name": "Ana Costa",
+      "phone": "11977777777",
+      "username": "ana8044",
+      "active": true,
+      "createdAt": "2026-06-16T20:01:59.062Z",
+      "updatedAt": "2026-06-16T20:01:59.062Z"
+    },
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
+    "professional": {
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
+      "active": true,
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
+    },
+    "date": "2026-06-18",
+    "startTime": "15:30",
+    "endTime": "16:15",
+    "notes": "",
+    "totalPrice": 65,
+    "totalDuration": 45,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqh2iwxnf14ctqynwzl",
+        "service": {
+          "name": "Corte Feminino",
+          "description": "Corte de cabelo feminino completo",
+          "duration": 45,
+          "price": 65,
+          "commission": 20,
+          "category": "Corte",
+          "id": "mqh2iwxnf14ctqynwzl",
+          "active": true,
+          "createdAt": "2026-06-16T20:01:57.563Z",
+          "updatedAt": "2026-06-16T20:01:57.563Z"
+        },
+        "price": 65,
+        "commission": 20,
+        "duration": 45
+      }
+    ],
+    "id": "mqjs98euavmuxbycg04",
+    "createdAt": "2026-06-18T17:37:48.246Z",
+    "updatedAt": "2026-06-18T17:37:48.246Z"
+  },
+  {
+    "clientId": "mqjqr7r5tlgd0nhvh2p",
+    "client": {
+      "id": "mqjqr7r5tlgd0nhvh2p",
+      "name": "Victor Yuri",
+      "phone": "31986440211",
+      "username": "victor1653",
+      "active": true,
+      "createdAt": "2026-06-18T16:55:47.969Z",
+      "updatedAt": "2026-06-18T16:56:29.246Z"
+    },
+    "professionalId": "mqh2iwvy3h3mh8fd2z4",
+    "professional": {
+      "id": "mqh2iwvy3h3mh8fd2z4",
+      "name": "Rosa",
+      "specialty": "Cabeleireira",
+      "commission": 30,
+      "active": true,
+      "createdAt": "2026-06-16T20:01:57.502Z",
+      "updatedAt": "2026-06-16T20:01:57.502Z"
+    },
+    "date": "2026-06-19",
+    "startTime": "15:00",
+    "endTime": "16:30",
+    "notes": "Solicitação via WhatsApp - Coloração",
+    "totalPrice": 120,
+    "totalDuration": 90,
+    "status": "SCHEDULED",
+    "paid": false,
+    "services": [
+      {
+        "serviceId": "mqh2ix0j5deh7wecdda",
+        "service": {
+          "name": "Coloração",
+          "description": "Coloração completa",
+          "duration": 90,
+          "price": 120,
+          "commission": 40,
+          "category": "Coloração",
+          "id": "mqh2ix0j5deh7wecdda",
+          "active": true,
+          "createdAt": "2026-06-16T20:01:57.667Z",
+          "updatedAt": "2026-06-16T20:01:57.667Z"
+        },
+        "price": 120,
+        "commission": 84,
+        "duration": 90
+      }
+    ],
+    "id": "mqjumh0esctijpeihg",
+    "createdAt": "2026-06-18T18:44:05.151Z",
+    "updatedAt": "2026-06-18T18:44:18.666Z"
   }
 ]

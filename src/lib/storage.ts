@@ -11,6 +11,7 @@ const collectionMap: Record<string, string> = {
   'professionals.json': 'professionals',
   'appointments.json': 'appointments',
   'transactions.json': 'transactions',
+  'messages.json': 'messages',
 }
 
 function toCollection(filename: string): string {

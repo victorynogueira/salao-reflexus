@@ -35,6 +35,7 @@ export interface Service {
   commission: number
   category: string
   active: boolean
+  priceToConfirm?: boolean
   createdAt: string
   updatedAt: string
 }
@@ -57,6 +58,7 @@ export interface AppointmentService {
   price: number
   commission: number
   duration: number
+  priceToConfirm?: boolean
 }
 
 export interface Appointment {
@@ -269,10 +271,11 @@ async function enrichAppointment(appt: any): Promise<Appointment> {
     const foundService = services.find(sv => sv.id === s.serviceId)
     return {
       serviceId: s.serviceId,
-      service: foundService || (s.service ? s.service : { id: s.serviceId, name: 'Serviço', duration: 0, price: s.price || 0, commission: 0, category: '', active: true, createdAt: '', updatedAt: '' }),
+      service: foundService || (s.service ? s.service : { id: s.serviceId, name: 'Serviço', duration: 0, price: s.price || 0, commission: 0, category: '', active: true, priceToConfirm: false, createdAt: '', updatedAt: '' }),
       price: s.price,
       commission: s.commission || 0,
       duration: s.duration || 0,
+      priceToConfirm: s.priceToConfirm || false,
     }
   })
 
@@ -359,4 +362,65 @@ export async function createTransaction(data: Omit<Transaction, 'id' | 'createdA
   transactions.push(newTransaction)
   await writeData('transactions.json', transactions)
   return newTransaction
+}
+
+// Messages
+export interface Message {
+  id: string
+  clientId: string
+  from: 'client' | 'admin'
+  text: string
+  read: boolean
+  createdAt: string
+}
+
+export async function getMessages(clientId?: string): Promise<Message[]> {
+  let messages = await readData<Message>('messages.json')
+  if (clientId) messages = messages.filter(m => m.clientId === clientId)
+  return messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+}
+
+export async function createMessage(data: Omit<Message, 'id' | 'createdAt'>): Promise<Message> {
+  const messages = await readData<Message>('messages.json')
+  const newMessage: Message = { ...data, id: generateId(), createdAt: new Date().toISOString() }
+  messages.push(newMessage)
+  await writeData('messages.json', messages)
+  return newMessage
+}
+
+export async function markMessageRead(messageId: string): Promise<boolean> {
+  const messages = await readData<Message>('messages.json')
+  const index = messages.findIndex(m => m.id === messageId)
+  if (index === -1) return false
+  messages[index].read = true
+  await writeData('messages.json', messages)
+  return true
+}
+
+export async function getUnreadCount(clientId?: string): Promise<number> {
+  const messages = await readData<Message>('messages.json')
+  return messages.filter(m => {
+    if (!m.read && !clientId && m.from === 'client') return true
+    if (clientId && m.clientId === clientId && !m.read && m.from === 'admin') return true
+    return false
+  }).length
+}
+
+export async function getConversations(): Promise<{ clientId: string; unread: number; lastMessage: string; lastTime: string }[]> {
+  const messages = await readData<Message>('messages.json')
+  const convMap = new Map<string, { unread: number; lastMessage: string; lastTime: string }>()
+
+  for (const msg of messages) {
+    const existing = convMap.get(msg.clientId) || { unread: 0, lastMessage: '', lastTime: '' }
+    if (msg.from === 'client' && !msg.read) existing.unread++
+    if (msg.createdAt > existing.lastTime) {
+      existing.lastMessage = msg.text
+      existing.lastTime = msg.createdAt
+    }
+    convMap.set(msg.clientId, existing)
+  }
+
+  return Array.from(convMap.entries())
+    .map(([clientId, data]) => ({ clientId, ...data }))
+    .sort((a, b) => new Date(b.lastTime).getTime() - new Date(a.lastTime).getTime())
 }
